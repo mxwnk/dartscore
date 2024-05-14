@@ -11,35 +11,36 @@ datasource db {
 }
 
 model Player {
-  id        String   @id @default(cuid())
-  name      String
+  id   String @id @default(cuid())
+  name String
 
-  turns     Turn[]
-  games     Game[]
-  
+  turns Turn[]
+  games Game[]
+
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 }
 
 model Game {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  players   Player[]
-  turns     Turn[]
+  players Player[]
+  turns   Turn[]
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 }
 
 model Turn {
-  id       Int     @id @default(autoincrement())
-  throws   Throw[] 
+  id         Int     @id @default(autoincrement())
+  throws     Throw[]
+  overthrown Boolean
 
-  player   Player  @relation(fields: [playerId], references: [id])
+  player   Player @relation(fields: [playerId], references: [id])
   playerId String
 
-  game     Game    @relation(fields: [gameId], references: [id])
-  gameId   String
+  game   Game   @relation(fields: [gameId], references: [id])
+  gameId String
 }
 
 model Throw {

@@ -11,7 +11,8 @@ export async function startGame(formData: FormData) {
             players: { connect: players },
             turns: {
                 create: {
-                    player: { connect: players[0] }
+                    player: { connect: players[0] },
+                    overthrown: false
                 }
             }
         }

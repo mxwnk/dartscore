@@ -4,8 +4,9 @@ import { useState } from "react";
 import { useGlobalKeydown } from "../../hooks/global-keydown";
 import { caseInsensitiveEquals } from "../../utils/string";
 import { submitThrow } from "@/app/play/[id]/sumit-throw";
-import { RingDto, TurnDto } from "@/app/models/game";
 import { undoLastThrow } from "./undo";
+import { RingDto } from "@/app/models/ring";
+import { TurnDto } from "@/app/models/turn";
 
 const scores = [...Array.from(Array(21).keys()), 25];
 
@@ -37,6 +38,10 @@ export function Scoreboard(props: ScoreboardProps) {
   });
 
   async function onSumit(score: number) {
+    if (score === 25 && ring === "T") {
+      setRing(null);
+      return;
+    }
     await submitThrow(props.turn, { score, ring });
     setRing(null);
   }

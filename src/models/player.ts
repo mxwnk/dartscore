@@ -1,22 +1,19 @@
-import { sum } from "../utils/number";
-import { Throw } from "./throw";
-import { Turn } from "./turn";
+import { sum } from "../../app/utils/number";
+import { PlayerDto, TurnDto, ThrowDto } from "@/app/models/game"
 
-export type Player = {
-    id: string;
-    name: string;
-    turns: Turn[];
-}
-
-export function calcTotalScore(player: Player) {
+export function calcTotalScore(player: PlayerDto) {
     return player.turns?.flatMap(t => t.throws).map(calcScoreOfThrow).reduce(sum, 0);
 }
 
-export function calcCurrentScore(player: Player): number {
-  return getCurrentTurn(player)?.throws.map(calcScoreOfThrow).reduce(sum, 0);
+export function calcCurrentScore(player: PlayerDto): number | undefined {
+    const throws = getCurrentTurn(player)?.throws;
+    if (!throws || throws.length === 0) {
+        return undefined;
+    }
+    return throws.map(calcScoreOfThrow).reduce(sum, 0);
 }
 
-export function calcAverage(player: Player) {
+export function calcAverage(player: PlayerDto) {
     const totalScore = calcTotalScore(player);
     const totalThrows = player.turns?.flatMap(t => t.throws)?.length;
     if (totalScore === 0 || totalThrows === 0) {
@@ -26,15 +23,15 @@ export function calcAverage(player: Player) {
     return result.toFixed(2);
 }
 
-export function getCurrentTurn(player: Player): Turn {
+export function getCurrentTurn(player: PlayerDto): TurnDto {
     return player.turns[player.turns.length - 1];
 }
 
-export function getThrowOfTurn(player: Player, index: 0 | 1 | 2) {
+export function getThrowOfTurn(player: PlayerDto, index: 0 | 1 | 2) {
     return getCurrentTurn(player)?.throws[index];
 }
 
-export function calcScoreOfThrow(t: Throw) {
+export function calcScoreOfThrow(t: ThrowDto) {
     if (t.ring === "D") {
         return t.score * 2;
     }
@@ -42,18 +39,4 @@ export function calcScoreOfThrow(t: Throw) {
         return t.score * 3;
     }
     return t.score;
-}
-
-export function addThrowToPlayer(player: Player, t: Throw) {
-    const currentTurn = getCurrentTurn(player);
-    if (!currentTurn) {
-        player.turns = [{ throws: [t] }];
-        return player;
-    }
-    if (currentTurn?.throws?.length === 3) {
-        player.turns = [...player.turns, { throws: [t] }]
-    } else {
-        currentTurn.throws = [...currentTurn?.throws, t];
-    }
-    return player;
 }

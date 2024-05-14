@@ -1,5 +1,5 @@
 'use client';
-import { Grid, Typography, Button, Paper } from "@mui/material";
+import { Grid, Typography, Button } from "@mui/material";
 import { useState } from "react";
 import { useGlobalKeydown } from "../../hooks/global-keydown";
 import { caseInsensitiveEquals } from "../../utils/string";
@@ -38,12 +38,11 @@ export function Scoreboard(props: ScoreboardProps) {
   });
 
   async function onSumit(score: number) {
+    setRing(null);
     if (score === 25 && ring === "T") {
-      setRing(null);
       return;
     }
     await submitThrow(props.turn, { score, ring });
-    setRing(null);
   }
 
   return (

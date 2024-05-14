@@ -6,7 +6,7 @@ import { ThrowDto } from "@/app/models/throw";
 
 export function PlayerRow({ player, isPlaying }: { player: PlayerDto; isPlaying: boolean; }) {
     const currentTurn = getCurrentTurnOfPlayer(player);
-    const style = currentTurn.overthrown ? {backgroundColor: "#f48fb1", color: '#ffffff'} : {};
+    const style = currentTurn?.overthrown ? {backgroundColor: "#f48fb1", color: '#ffffff'} : {};
     return (
         <Paper elevation={2} sx={{ display: 'flex', mb: 2, ...style}}>
             <PlayerBadge selected={isPlaying} />

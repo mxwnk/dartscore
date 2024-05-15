@@ -1,13 +1,9 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import theme from './theme';
-import { Navigation } from './components/app-bar';
-import { Box } from '@mui/material';
-
-const inter = Inter({ subsets: ["latin"] });
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   title: "Dart Scoreboard",
@@ -27,6 +23,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </AppRouterCacheProvider>
+        <SpeedInsights/>
       </body>
     </html>
   );

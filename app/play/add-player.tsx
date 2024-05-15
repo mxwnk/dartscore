@@ -21,7 +21,7 @@ export function AddPlayerButton() {
                     </DialogActions>
                 </form>
             </Dialog>
-            <Button variant='outlined' onClick={() => setShowDialog(prev => !prev)}>
+            <Button fullWidth variant='outlined' onClick={() => setShowDialog(prev => !prev)}>
                 Add Player
             </Button>
         </>

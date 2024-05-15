@@ -51,25 +51,25 @@ export function Scoreboard(props: ScoreboardProps) {
         {scores.map(s => (
           <Grid key={s} item xs={2} sx={{ cursor: 'pointer' }} onClick={() => onSumit(s)}>
             <Button sx={{ width: '100%', py: 2 }} variant='outlined'>
-              <Typography variant="h4">{s}</Typography>
+              <Typography variant="h5">{s}</Typography>
             </Button>
           </Grid>
         ))}
       </Grid>
       <Grid container spacing={1}>
         <Grid item md={4} lg={4} xs={6}>
-          <Button onClick={() => toggleRing("D")} color="info" sx={{ width: '100%', py: 2 }} variant={ring === "D" ? 'contained' : 'outlined'}>
-            <Typography variant="h4">Double</Typography>
+          <Button size="small" onClick={() => toggleRing("D")} color="info" sx={{ width: '100%', py: 2 }} variant={ring === "D" ? 'contained' : 'outlined'}>
+            <Typography variant="h5">Double</Typography>
           </Button>
         </Grid>
         <Grid item md={4} lg={4} xs={6}>
           <Button onClick={() => toggleRing("T")} sx={{ width: '100%', py: 2 }} variant={ring === "T" ? 'contained' : 'outlined'}>
-            <Typography variant="h4">Triple</Typography>
+            <Typography variant="h5">Triple</Typography>
           </Button>
         </Grid>
         <Grid item md={4} lg={4} xs={6}>
           <Button onClick={() => undoLastThrow(props.turn.gameId)} color="error" sx={{ width: '100%', py: 2 }} variant='outlined'>
-            <Typography variant="h4">Undo</Typography>
+            <Typography variant="h5">Undo</Typography>
           </Button>
         </Grid>
       </Grid>

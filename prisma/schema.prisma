@@ -27,6 +27,8 @@ model Game {
   players Player[]
   turns   Turn[]
 
+  startpoints Int
+
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 }

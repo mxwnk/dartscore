@@ -1,31 +1,22 @@
 import prisma from "@/lib/prisma";
-import { Button, TextField, Typography } from "@mui/material";
-import { startGame } from "./start-game";
-import { AddPlayerButton } from "./add-player";
+import { Navigation } from "../components/app-bar";
+import { GameSetup } from "./game-setup";
+import { Box } from "@mui/material";
+
+type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
+
+export type PlayerWithName = ThenArg<ReturnType<typeof getPlayers>>[0];
 
 async function getPlayers() {
     return await prisma.player.findMany();
 }
 
-export default async function SetupPage() {
+export default async function PlayPage() {
     const players = await getPlayers();
     return (
-        <>
-            <Typography variant="h3">Start new Game</Typography>
-            <Typography variant="h5">Select players</Typography>
-            <AddPlayerButton></AddPlayerButton>
-            <form action={startGame}>
-                <div>
-                    <select name="players" multiple>
-                        {players.map((p, i) => (
-                            <option key={i} value={p.id}>
-                                {p.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <Button type="submit" color="primary" variant='contained'>Start Game</Button>
-            </form>
-        </>
+        <Box>
+            <Navigation title="Play Darts" />
+            <GameSetup players={players} />
+        </Box>
     );
 }

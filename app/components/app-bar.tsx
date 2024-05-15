@@ -1,11 +1,16 @@
 import { AppBar, Toolbar, IconButton, Typography, Button } from "@mui/material";
 import ModeStandbyIcon from '@mui/icons-material/ModeStandby';
 
-export function Navigation() {
+type NagivationProps = {
+    title: string;
+}
+
+export function Navigation(props: NagivationProps) {
     return (
         <AppBar position="static">
             <Toolbar>
                 <IconButton
+                    href="/play"
                     size="large"
                     edge="start"
                     color="inherit"
@@ -15,7 +20,7 @@ export function Navigation() {
                     <ModeStandbyIcon />
                 </IconButton>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                    Dart Scoreboard
+                    {props.title}
                 </Typography>
             </Toolbar>
         </AppBar>

@@ -21,13 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body style={{ margin: 0 }}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}>
-            <Navigation/>
-            <Box mt={2}>
-              {children}
-            </Box>
+            {children}
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

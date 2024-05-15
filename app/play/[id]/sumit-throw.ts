@@ -15,9 +15,10 @@ type CreateThrow = {
 export async function submitThrow(turn: TurnDto, dartThrow: CreateThrow) {
     let updatedTurn = await addThrowToTurn(turn, dartThrow);
     const totalScore = calcTotalScoreOfTurns(updatedTurn.player.turns);
-    if (totalScore === 301) {
+    const startpoints = updatedTurn.game.startpoints;
+    if (totalScore === startpoints) {
         redirect(`/game/${turn.gameId}/finished`);
-    } else if (totalScore > 301) {
+    } else if (totalScore > startpoints) {
         updatedTurn = await setOverthrown(updatedTurn);
     }
 
@@ -47,7 +48,26 @@ async function addThrowToTurn(turn: TurnDto, dartThrow: CreateThrow) {
     const updatedTurn = await prisma.turn.update({
         where: { id: turn.id },
         data: { throws: { create: dartThrow } },
-        ...turnSelection
+        select: {
+            id: true,
+            throws: true,
+            gameId: true,
+            overthrown: true,
+            game: {
+                select: {
+                    startpoints: true
+                }
+            },
+            player: {
+                select:
+                {
+                    turns: {
+                        select: { id: true, throws: true, overthrown: true },
+                        where: { gameId: turn.gameId }
+                    }
+                }
+            }
+        }
     });
     return updatedTurn;
 }
@@ -57,24 +77,25 @@ async function setOverthrown(turn: Omit<TurnDto, "playerId">) {
         where: { id: turn.id }, data: {
             overthrown: true
         },
-        ...turnSelection
-    });
-}
-
-const turnSelection =
-{
-    select: {
-        id: true,
-        throws: true,
-        gameId: true,
-        overthrown: true,
-        player: {
-            select:
-            {
-                turns: {
-                    select: { id: true, throws: true, overthrown: true }
+        select: {
+            id: true,
+            throws: true,
+            gameId: true,
+            overthrown: true,
+            game: {
+                select: {
+                    startpoints: true
+                }
+            },
+            player: {
+                select:
+                {
+                    turns: {
+                        select: { id: true, throws: true, overthrown: true },
+                        where: { gameId: turn.gameId }
+                    }
                 }
             }
         }
-    }
-};
+    });
+}

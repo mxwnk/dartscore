@@ -14,7 +14,7 @@ export function AddPlayerButton() {
             <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
                 <form action={onSubmit}>
                     <DialogTitle>Add new player</DialogTitle>
-                    <TextField autoFocus placeholder="Name" sx={{ p: 2 }} name="name"></TextField>
+                    <TextField inputProps={{maxLength: 16}} autoFocus placeholder="Name" sx={{ p: 2 }} name="name"></TextField>
                     <DialogActions>
                         <Button onClick={() => setShowDialog(false)}>Cancel</Button>
                         <Button variant="contained" type="submit">Add</Button>

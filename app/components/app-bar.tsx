@@ -10,7 +10,7 @@ export function Navigation(props: NagivationProps) {
         <AppBar position="static">
             <Toolbar>
                 <IconButton
-                    href="/play"
+                    href="/"
                     size="large"
                     edge="start"
                     color="inherit"

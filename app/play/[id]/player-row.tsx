@@ -1,22 +1,34 @@
 'use client';
 import { Box, Grid, Paper, Typography, useTheme } from "@mui/material";
 import { PlayerBadge } from "./player-badge";
-import { PlayerDto, getCurrentTurnOfPlayer } from "@/app/models/player";
+import { PlayerDto, getCurrentTurnOfPlayer, hasPlayerWon } from "@/app/models/player";
 import { calcAverageOfTurns, calcTotalScoreOfTurn, calcTotalScoreOfTurns } from "@/app/models/turn";
 import { ThrowDto } from "@/app/models/throw";
-import { GameDto } from "@/app/models/game";
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
-export function PlayerRow({ player, isPlaying, startpoints }: { player: PlayerDto; isPlaying: boolean; startpoints: number;}) {
+export function PlayerRow({ player, isPlaying, startpoints }: { player: PlayerDto; isPlaying: boolean; startpoints: number; }) {
     const theme = useTheme();
     const currentTurn = getCurrentTurnOfPlayer(player);
-    const style = currentTurn?.overthrown ? {backgroundColor: "#f48fb1", color: '#ffffff'} : {};
+    const hasWon = hasPlayerWon(player, startpoints);
+
+    function rowStyle() {
+        if (hasWon) {
+            return { backgroundColor: theme.palette.grey[200] };
+        }
+        if (currentTurn?.overthrown) {
+            return { backgroundColor: "#f48fb1", color: '#ffffff' };
+        }
+        return {};
+    }
+
     return (
-        <Paper elevation={2} sx={{ display: 'flex', mb: 2, border: isPlaying ? `2px solid ${theme.palette.primary.main}`: "", ...style}}>
+        <Paper elevation={2} sx={{ display: 'flex', mb: 2, border: isPlaying ? `2px solid ${theme.palette.primary.main}` : "", ...rowStyle()}}>
             <PlayerBadge selected={isPlaying} />
             <Grid container justifyContent='space-between'>
                 <Grid item xs={4} alignContent='center' alignItems='center'>
                     <Box textAlign='center'>
-                        <Typography variant='h4'>{startpoints - calcTotalScoreOfTurns(player.turns)}</Typography>
+                        {!hasWon && <Typography variant='h4'>{startpoints - calcTotalScoreOfTurns(player.turns)}</Typography>}
+                        {hasWon && <EmojiEventsIcon />}
                         <Typography variant='h6'>{player.name}</Typography>
                     </Box>
                 </Grid>
@@ -56,3 +68,4 @@ function DartThrow(props: { throw: ThrowDto | undefined }) {
         <Typography variant='h5'>{props.throw.ring}{props.throw.score}</Typography>
     )
 }
+

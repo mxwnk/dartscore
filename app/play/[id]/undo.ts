@@ -12,6 +12,7 @@ export async function undoLastThrow(gameId: string) {
         return;
     }
     const lastTurn = game.turns[game.turns.length - 1];
+    await prisma.turn.update({ data: { overthrown: false }, where: { id: lastTurn.id } });
     if (lastTurn.throws.length === 0) {
         await prisma.turn.delete({ where: { id: lastTurn.id } });
     }

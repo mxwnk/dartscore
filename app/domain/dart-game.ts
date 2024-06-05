@@ -103,7 +103,7 @@ export class DartGame {
         return undefined;
     }
 
-    public async throwDart(dartThrow: DartThrow) {
+    public async addDartThrow(dartThrow: DartThrow) {
         const currentPlayer = this.getCurrentPlayer();
         const currentTurn = this.gameState.turns.at(-1);
         if (!currentPlayer || !currentTurn) {

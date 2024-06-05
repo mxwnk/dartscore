@@ -12,7 +12,7 @@ import { isNumber } from "@/app/utils/number";
 const scores = [...Array.from(Array(21).keys()), 25];
 
 type ScoreboardProps = {
-  turn: TurnDto;
+  gameId: string;
 };
 
 export function Scoreboard(props: ScoreboardProps) {
@@ -29,7 +29,7 @@ export function Scoreboard(props: ScoreboardProps) {
 
   useGlobalKeydown((e) => {
     const key = e.key.toUpperCase();
-    
+
     if (caseInsensitiveEquals(key, "T")) {
       toggleRing("T");
       return;
@@ -45,7 +45,7 @@ export function Scoreboard(props: ScoreboardProps) {
   });
 
   async function onSumit(score: number) {
-    await submitThrow(props.turn, { score, ring });
+    await submitThrow(props.gameId, { score, ring });
     setRing(null);
   }
 
@@ -82,7 +82,7 @@ export function Scoreboard(props: ScoreboardProps) {
           </Button>
         </Grid>
         <Grid item md={4} lg={4} xs={6}>
-          <Button onClick={() => undoLastThrow(props.turn.gameId)} color="error" sx={{ width: '100%', py: 2 }} variant='outlined'>
+          <Button onClick={() => undoLastThrow(props.gameId)} color="error" sx={{ width: '100%', py: 2 }} variant='outlined'>
             <Typography variant="h5">Undo</Typography>
           </Button>
         </Grid>

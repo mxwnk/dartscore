@@ -14,11 +14,11 @@ model Player {
   id   String @id @default(cuid())
   name String
 
-  turns Turn[]
   games Game[]
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
+  Turn      Turn[]
 }
 
 model Game {

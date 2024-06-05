@@ -1,31 +1,18 @@
 'use server';
 import prisma from "@/lib/prisma";
 import { GameDto, getCurrentPlayer } from "@/app/models/game";
-import { getGameById } from "../get-game";
 import { revalidateTag } from "next/cache";
-import { TurnDto, calcTotalScoreOfTurns } from "@/app/models/turn";
-import { RingDto } from "@/app/models/ring";
+import { TurnDto } from "@/app/models/turn";
 import { PlayerDto, hasPlayerWon } from "@/app/models/player";
 import { ThenArg } from "@/app/utils/promise";
+import { DartGame, DartThrow } from "@/app/domain/dart-game";
+import { getGameById } from "@/app/db/actions";
 
-type CreateThrow = {
-    ring: RingDto | null;
-    score: number;
-}
 
-export async function submitThrow(turn: TurnDto, dartThrow: CreateThrow) {
-    let currentTurn = await addThrowToTurn(turn, dartThrow);
-    const totalScore = calcTotalScoreOfTurns(currentTurn.player.turns);
-    const startpoints = currentTurn.game.startpoints;
-    if (totalScore > startpoints) {
-        currentTurn = await setOverthrown(currentTurn);
-    }
-
-    if (isNextTurn(currentTurn)) {
-        await nextTurn(currentTurn.gameId);
-    }
-
-    revalidateTag(`/play/${turn.gameId}`);
+export async function submitThrow(gameId: string, dartThrow: DartThrow) {
+    const game = DartGame.fromGameState(await getGameById(gameId));
+    await game.throwDart(dartThrow);
+    revalidateTag(`/play/${gameId}`);
 }
 
 function isNextTurn(currentTurn: CurrentTurn) {

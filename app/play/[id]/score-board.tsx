@@ -1,12 +1,11 @@
 'use client';
-import { Grid, Typography, Button, Dialog, TextField, DialogActions, DialogTitle } from "@mui/material";
+import { Grid, Typography, Button, Dialog, TextField } from "@mui/material";
 import { useState } from "react";
 import { useGlobalKeydown } from "../../hooks/global-keydown";
 import { caseInsensitiveEquals } from "../../utils/string";
 import { submitThrow } from "@/app/play/[id]/sumit-throw";
 import { undoLastThrow } from "./undo";
 import { RingDto } from "@/app/models/ring";
-import { TurnDto } from "@/app/models/turn";
 import { isNumber } from "@/app/utils/number";
 
 const scores = [...Array.from(Array(21).keys()), 25];

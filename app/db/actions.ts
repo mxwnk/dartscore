@@ -1,5 +1,6 @@
 'use server';
 import prisma from "@/lib/prisma";
+import { PlayerDto } from "../models/player";
 
 export async function getGameById(id: string) {
     return await prisma.game.findUniqueOrThrow({
@@ -11,6 +12,20 @@ export async function getGameById(id: string) {
                 }
             },
             players: true
+        }
+    });
+}
+export async function saveGame(players: PlayerDto[]) {
+    const game = await prisma.game.create({
+        data: {
+            players: { connect: players },
+            startpoints: 301,
+            turns: {
+                create: {
+                    player: { connect: players[0] },
+                    overthrown: false,
+                }
+            }
         }
     });
 }

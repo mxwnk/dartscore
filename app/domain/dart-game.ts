@@ -1,4 +1,4 @@
-import { saveDartThrow, saveNewTurn } from "../db/actions";
+import { saveDartThrow, saveGame, saveNewTurn } from "../db/actions";
 import { GameDto } from "../models/game";
 import { PlayerDto } from "../models/player";
 import { RingDto } from "../models/ring";
@@ -18,8 +18,8 @@ export class DartGame {
         return new DartGame(gameState);
     }
 
-    static startNewGame() {
-
+    static async startNewGame(players: PlayerDto[]) {
+        await saveGame(players);
     }
 
     private constructor(private gameState: GameDto) {
@@ -37,11 +37,11 @@ export class DartGame {
     public getMissingScore(playerId: string): number {
         return this.gameState.startpoints - this.getCurrentScore(playerId);
     }
-    
+
     public getStartPoints(): number {
         return this.gameState.startpoints;
     }
-    
+
     public getCurrentTurn(playerId: string): TurnDto | undefined {
         return this.gameState.turns.findLast(t => t.playerId === playerId);
     }
@@ -84,7 +84,7 @@ export class DartGame {
     public getCurrentPlayer(): PlayerDto | undefined {
         const allPlayers = this.getPlayers();
         const lastTurn = this.gameState.turns.at(-1);
-        
+
         if (!lastTurn) {
             return allPlayers.at(0);
         }
@@ -115,6 +115,9 @@ export class DartGame {
         } else {
             const newThrow = await saveDartThrow({ turnId: currentTurn.id, dartThrow });
             currentTurn.throws = [...currentTurn.throws, newThrow];
+            if (currentTurn.throws.length === 3) {
+                const nextPlayer = this.getCurrentPlayer();
+            }
         }
     }
 }

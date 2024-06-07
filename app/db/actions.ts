@@ -57,10 +57,26 @@ export async function createNewTurn({ gameId, playerId }: { gameId: string, play
     });
 }
 
-export async function deleteThrow(throwId: number){
-    return await prisma.throw.delete({where: {id: throwId}});
+export async function setOverthrown(turnId: number) {
+    return await prisma.turn.update({
+        where: {
+            id: turnId
+        },
+        data: { overthrown: true },
+        select: {
+            id: true,
+            overthrown: true,
+            playerId: true,
+            gameId: true,
+            throws: true
+        }
+    });
 }
 
-export async function deleteTurn(turnId: number){
-    return await prisma.turn.delete({where: {id: turnId}});
+export async function deleteThrow(throwId: number) {
+    return await prisma.throw.delete({ where: { id: throwId } });
+}
+
+export async function deleteTurn(turnId: number) {
+    return await prisma.turn.delete({ where: { id: turnId } });
 }

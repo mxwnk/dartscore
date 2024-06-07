@@ -1,4 +1,4 @@
-import { saveDartThrow, saveGame, createNewTurn, deleteThrow, deleteTurn } from "../db/actions";
+import { saveDartThrow, saveGame, createNewTurn, deleteThrow, deleteTurn, setOverthrown } from "../db/actions";
 import { GameDto } from "../models/game";
 import { PlayerDto } from "../models/player";
 import { RingDto } from "../models/ring";
@@ -83,6 +83,9 @@ export class DartGame {
         if (currentPlayer?.id === playerId) {
             return "playing";
         }
+        if (this.getCurrentTurn(playerId)?.overthrown) {
+            return 'overthrown';
+        }
         return "waiting";
     }
 
@@ -110,12 +113,15 @@ export class DartGame {
 
     public async addDartThrow(dartThrow: DartThrow) {
         const currentPlayer = this.getCurrentPlayer();
-        const currentTurn = this.gameState.turns.at(-1);
+        let currentTurn = this.gameState.turns.at(-1);
         if (!currentPlayer || !currentTurn) {
             return;
         }
         const newThrow = await saveDartThrow({ turnId: currentTurn.id, dartThrow });
         currentTurn.throws = [...currentTurn.throws, newThrow];
+        if (this.getMissingScore(currentPlayer.id) < 0) {
+            currentTurn = await setOverthrown(currentTurn.id);
+        }
         if (currentTurn.throws.length === 3 || currentTurn.overthrown) {
             const newTurn = await createNewTurn({ gameId: this.getId(), playerId: this.getCurrentPlayer()!.id })
             this.gameState.turns = [...this.gameState.turns, newTurn];

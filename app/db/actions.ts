@@ -1,6 +1,7 @@
 'use server';
 import prisma from "@/lib/prisma";
 import { PlayerDto } from "../models/player";
+import { DartThrow } from "../domain/dart-game";
 
 export async function getGameById(id: string) {
     return await prisma.game.findUniqueOrThrow({

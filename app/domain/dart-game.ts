@@ -34,6 +34,11 @@ export class DartGame {
         return this.gameState.players.every(p => this.hasPlayerWon(p.id));
     }
 
+    public getRounds(): number {
+        const firstPlayer = this.gameState.players.at(0);
+        return this.gameState.turns.filter(t => t.playerId === firstPlayer?.id).length;
+    }
+
     public getMissingScore(playerId: string): number {
         return this.gameState.startpoints - this.getCurrentScore(playerId);
     }

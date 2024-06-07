@@ -1,18 +1,14 @@
-import { PlayerDto } from "@/app/models/player";
-import { calcTotalScoreOfTurns } from "@/app/models/turn";
 import { Paper, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
 type TurnBannerProps = {
-    player: PlayerDto;
-    startpoints: number;
+    rounds: number;
+    missingScore: number;
 }
 
-export function TurnBanner({player, startpoints}: TurnBannerProps) {
-    const rounds = player.turns?.length ?? 1;
-    const missingScore = startpoints - calcTotalScoreOfTurns(player.turns);
+export function TurnBanner({ rounds, missingScore }: TurnBannerProps) {
     const possibleCheckout = checkouts[missingScore];
-    const checkout = possibleCheckout ? ` - Checkout: ${possibleCheckout}` : ""
+    const checkout = possibleCheckout ? ` - Checkout: ${possibleCheckout}` : "";
     return (
         <Paper sx={{ backgroundColor: grey[200], p: 2, mb: 2 }}>
             <Typography variant="h6">Round <b>{rounds}</b>{checkout}</Typography>

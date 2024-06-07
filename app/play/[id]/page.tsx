@@ -4,9 +4,11 @@ import { Navigation } from "@/app/components/app-bar";
 import { Box } from "@mui/material";
 import { DartGame } from "@/app/domain/dart-game";
 import { getGameById } from "@/app/db/actions";
+import { TurnBanner } from "./turn-banner";
 
 export default async function Game({ params }: { params: { id: string } }) {
     const game = DartGame.fromGameState(await getGameById(params.id));
+    const currentPlayer = game.getCurrentPlayer();
 
     return (
         <>
@@ -20,7 +22,7 @@ export default async function Game({ params }: { params: { id: string } }) {
                     averageScore={0}
                     turn={game.getCurrentTurn(p.id)}
                 />)}
-                {/* <TurnBanner player={game.getCurrentPlayer()} startpoints={game.startpoints} /> */}
+                {currentPlayer && <TurnBanner missingScore={game.getMissingScore(currentPlayer.id)} rounds={game.getRounds()} />}
                 <Scoreboard gameId={game.getId()} /> 
             </Box>
         </>

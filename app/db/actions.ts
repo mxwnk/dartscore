@@ -56,3 +56,11 @@ export async function createNewTurn({ gameId, playerId }: { gameId: string, play
         }
     });
 }
+
+export async function deleteThrow(throwId: number){
+    return await prisma.throw.delete({where: {id: throwId}});
+}
+
+export async function deleteTurn(turnId: number){
+    return await prisma.turn.delete({where: {id: turnId}});
+}

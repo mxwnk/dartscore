@@ -1,4 +1,4 @@
-import { saveDartThrow, saveGame, createNewTurn } from "../db/actions";
+import { saveDartThrow, saveGame, createNewTurn, deleteThrow, deleteTurn } from "../db/actions";
 import { GameDto } from "../models/game";
 import { PlayerDto } from "../models/player";
 import { RingDto } from "../models/ring";
@@ -117,8 +117,21 @@ export class DartGame {
         const newThrow = await saveDartThrow({ turnId: currentTurn.id, dartThrow });
         currentTurn.throws = [...currentTurn.throws, newThrow];
         if (currentTurn.throws.length === 3 || currentTurn.overthrown) {
-            const newTurn = await createNewTurn({ gameId: this.getId(), playerId: this.getCurrentPlayer()!.id})
+            const newTurn = await createNewTurn({ gameId: this.getId(), playerId: this.getCurrentPlayer()!.id })
             this.gameState.turns = [...this.gameState.turns, newTurn];
+        }
+    }
+
+    public async undo() {
+        const allThrows = this.gameState.turns.flatMap(t => t.throws);
+        const lastThrow = allThrows.at(-1);
+        if (allThrows.length === 0 || !lastThrow) {
+            return;
+        }
+        await deleteThrow(lastThrow.id);
+        const currentTurn = this.gameState.turns.at(-1);
+        if (currentTurn && lastThrow.turnId !== currentTurn?.id) {
+            deleteTurn(currentTurn.id);
         }
     }
 }

@@ -16,7 +16,7 @@ export async function getGameById(id: string) {
     });
 }
 export async function saveGame(players: PlayerDto[]) {
-    const game = await prisma.game.create({
+    return await prisma.game.create({
         data: {
             players: { connect: players },
             startpoints: 301,
@@ -40,15 +40,12 @@ export async function saveDartThrow({ turnId, dartThrow }: { turnId: number, dar
     })
 }
 
-export async function saveNewTurn({ gameId, playerId, dartThrow }: { gameId: string, playerId: string, dartThrow: DartThrow }) {
+export async function createNewTurn({ gameId, playerId }: { gameId: string, playerId: string }) {
     return await prisma.turn.create({
         data: {
             gameId,
             playerId,
             overthrown: false,
-            throws: {
-                create: [{ ...dartThrow }]
-            }
         }, select: {
             id: true,
             overthrown: true,

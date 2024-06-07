@@ -1,4 +1,4 @@
-import { saveDartThrow, saveGame, saveNewTurn } from "../db/actions";
+import { saveDartThrow, saveGame, createNewTurn } from "../db/actions";
 import { GameDto } from "../models/game";
 import { PlayerDto } from "../models/player";
 import { RingDto } from "../models/ring";
@@ -19,7 +19,7 @@ export class DartGame {
     }
 
     static async startNewGame(players: PlayerDto[]) {
-        await saveGame(players);
+        return await saveGame(players);
     }
 
     private constructor(private gameState: GameDto) {
@@ -109,15 +109,11 @@ export class DartGame {
         if (!currentPlayer || !currentTurn) {
             return;
         }
-        if (!currentTurn || currentTurn.throws.length === 3 || currentTurn.overthrown) {
-            const newTurn = await saveNewTurn({ gameId: this.getId(), playerId: this.getCurrentPlayer()!.id, dartThrow })
+        const newThrow = await saveDartThrow({ turnId: currentTurn.id, dartThrow });
+        currentTurn.throws = [...currentTurn.throws, newThrow];
+        if (currentTurn.throws.length === 3 || currentTurn.overthrown) {
+            const newTurn = await createNewTurn({ gameId: this.getId(), playerId: this.getCurrentPlayer()!.id})
             this.gameState.turns = [...this.gameState.turns, newTurn];
-        } else {
-            const newThrow = await saveDartThrow({ turnId: currentTurn.id, dartThrow });
-            currentTurn.throws = [...currentTurn.throws, newThrow];
-            if (currentTurn.throws.length === 3) {
-                const nextPlayer = this.getCurrentPlayer();
-            }
         }
     }
 }

@@ -11,5 +11,8 @@ export function calcTotalScoreOfTurns(turns: SimpleTurnDto[]) {
 }
 
 export function calcTotalScoreOfTurn(turn?: SimpleTurnDto) {
+    if (!turn || turn.throws?.length === 0) {
+        return null;
+    }
     return turn?.throws.map(calcTotalScoreOfThrow).reduce(sum, 0);
 }

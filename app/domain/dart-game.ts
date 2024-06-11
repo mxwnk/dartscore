@@ -1,4 +1,4 @@
-import { saveDartThrow, saveGame, createNewTurn, deleteThrow, deleteTurn, setOverthrown } from "../db/actions";
+import { saveDartThrow, saveGame, createNewTurn, deleteThrow, deleteTurn, setOverthrown, resetOverthrown } from "../db/actions";
 import { GameDto } from "../models/game";
 import { PlayerDto } from "../models/player";
 import { RingDto } from "../models/ring";
@@ -92,23 +92,15 @@ export class DartGame {
     public getCurrentPlayer(): PlayerDto | undefined {
         const allPlayers = this.getPlayers();
         const lastTurn = this.gameState.turns.at(-1);
-
         if (!lastTurn) {
             return allPlayers.at(0);
         }
+
         const lastPlayer = this.getPlayerById(lastTurn.playerId);
         if (lastTurn.throws?.length < 3 && !lastTurn?.overthrown) {
             return lastPlayer;
         }
-        const lastPlayerIndex = allPlayers.findIndex(p => p.id === lastPlayer.id);
-        for (let index = 1; index <= allPlayers.length + 1; index++) {
-            const nextPlayerIndex = (lastPlayerIndex + index) % allPlayers.length;
-            const nextPlayer = allPlayers.at(nextPlayerIndex) as PlayerDto;
-            if (!this.hasPlayerWon(nextPlayer.id)) {
-                return nextPlayer;
-            }
-        }
-        return undefined;
+        return this.getNextPlayer(lastPlayer);
     }
 
     public async addDartThrow(dartThrow: DartThrow) {
@@ -122,8 +114,9 @@ export class DartGame {
         if (this.getMissingScore(currentPlayer.id) < 0) {
             currentTurn = await setOverthrown(currentTurn.id);
         }
-        if (currentTurn.throws.length === 3 || currentTurn.overthrown) {
-            const newTurn = await createNewTurn({ gameId: this.getId(), playerId: this.getCurrentPlayer()!.id })
+        const nextPlayer = this.getNextPlayer(currentPlayer);
+        if ((currentTurn.throws.length === 3 || currentTurn.overthrown) && nextPlayer) {
+            const newTurn = await createNewTurn({ gameId: this.getId(), playerId: nextPlayer.id })
             this.gameState.turns = [...this.gameState.turns, newTurn];
         }
     }
@@ -135,9 +128,23 @@ export class DartGame {
             return;
         }
         await deleteThrow(lastThrow.id);
+        await resetOverthrown(lastThrow.turnId);
         const currentTurn = this.gameState.turns.at(-1);
         if (currentTurn && lastThrow.turnId !== currentTurn?.id) {
             deleteTurn(currentTurn.id);
         }
+    }
+
+    private getNextPlayer(currentPlayer: PlayerDto): PlayerDto | undefined {
+        const allPlayers = this.getPlayers();
+        const lastPlayerIndex = allPlayers.findIndex(p => p.id === currentPlayer.id);
+        for (let index = 1; index <= allPlayers.length + 1; index++) {
+            const nextPlayerIndex = (lastPlayerIndex + index) % allPlayers.length;
+            const nextPlayer = allPlayers.at(nextPlayerIndex) as PlayerDto;
+            if (!this.hasPlayerWon(nextPlayer.id)) {
+                return nextPlayer;
+            }
+        }
+        return undefined;
     }
 }

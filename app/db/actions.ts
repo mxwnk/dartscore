@@ -57,6 +57,15 @@ export async function createNewTurn({ gameId, playerId }: { gameId: string, play
     });
 }
 
+export async function resetOverthrown(turnId: number) {
+    return await prisma.turn.update({
+        where: {
+            id: turnId
+        },
+        data: { overthrown: false }
+    });
+}
+
 export async function setOverthrown(turnId: number) {
     return await prisma.turn.update({
         where: {

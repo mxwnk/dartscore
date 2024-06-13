@@ -63,7 +63,7 @@ export function PlayerRow(props: PlayerRowProps) {
                 </Grid>
                 <Grid item xs={4} justifyContent='center' alignContent='center'>
                     <Typography variant='h5' textAlign='center'>
-                        Ø{props.averageScore}
+                        Ø{props.averageScore.toFixed(2)}
                     </Typography>
                 </Grid>
             </Grid>

@@ -19,7 +19,7 @@ export default async function Game({ params }: { params: { id: string } }) {
                     player={p}
                     playerState={game.getPlayerState(p.id)}
                     missingScore={game.getMissingScore(p.id)}
-                    averageScore={0}
+                    averageScore={game.getAverageScore(p.id)}
                     turn={game.getCurrentTurn(p.id)}
                 />)}
                 {currentPlayer && <TurnBanner missingScore={game.getMissingScore(currentPlayer.id)} rounds={game.getRounds()} />}

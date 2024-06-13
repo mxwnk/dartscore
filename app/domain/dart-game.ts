@@ -44,6 +44,14 @@ export class DartGame {
         return this.gameState.startpoints - this.getCurrentScore(playerId);
     }
 
+    public getAverageScore(playerId: string): number {
+        const playerTurns = this.gameState.turns.filter(t => t.playerId === playerId);
+        if (playerTurns.length === 0) {
+            return 0;
+        }
+        return this.getCurrentScore(playerId) / playerTurns.length;
+    }
+
     public getStartPoints(): number {
         return this.gameState.startpoints;
     }
@@ -65,7 +73,8 @@ export class DartGame {
         return this.gameState.turns
             .filter(t => !t.overthrown && t.playerId === playerId)
             .flatMap(t => t.throws)
-            .map(calcScoreOfThrow).reduce(sum, 0);
+            .map(calcScoreOfThrow)
+            .reduce(sum, 0);
     }
 
     public getPlayerById(id: string): PlayerDto {

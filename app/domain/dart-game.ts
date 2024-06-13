@@ -11,6 +11,7 @@ export type PlayerState = "playing" | "won" | "waiting" | "overthrown";
 export type DartThrow = {
     ring: RingDto | null;
     score: number;
+    playerId: string;
 }
 
 export class DartGame {
@@ -104,18 +105,18 @@ export class DartGame {
     }
 
     public async addDartThrow(dartThrow: DartThrow) {
-        const currentPlayer = this.getCurrentPlayer();
         let currentTurn = this.gameState.turns.at(-1);
-        if (!currentPlayer || !currentTurn) {
+        if (!currentTurn) {
             return;
         }
+        const currentPlayer = this.getPlayerById(currentTurn.playerId);
         const newThrow = await saveDartThrow({ turnId: currentTurn.id, dartThrow });
         currentTurn.throws = [...currentTurn.throws, newThrow];
-        if (this.getMissingScore(currentPlayer.id) < 0) {
+        if (this.getMissingScore(currentTurn.playerId) < 0) {
             currentTurn = await setOverthrown(currentTurn.id);
         }
         const nextPlayer = this.getNextPlayer(currentPlayer);
-        if ((currentTurn.throws.length === 3 || currentTurn.overthrown) && nextPlayer) {
+        if (this.isTurnOver(currentTurn) && nextPlayer) {
             const newTurn = await createNewTurn({ gameId: this.getId(), playerId: nextPlayer.id })
             this.gameState.turns = [...this.gameState.turns, newTurn];
         }
@@ -146,5 +147,9 @@ export class DartGame {
             }
         }
         return undefined;
+    }
+
+    private isTurnOver(turn: TurnDto) {
+        return turn.throws.length === 3 || turn.overthrown || this.hasPlayerWon(turn.playerId);
     }
 }

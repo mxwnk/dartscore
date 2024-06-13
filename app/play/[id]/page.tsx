@@ -23,7 +23,7 @@ export default async function Game({ params }: { params: { id: string } }) {
                     turn={game.getCurrentTurn(p.id)}
                 />)}
                 {currentPlayer && <TurnBanner missingScore={game.getMissingScore(currentPlayer.id)} rounds={game.getRounds()} />}
-                <Scoreboard gameId={game.getId()} /> 
+                {currentPlayer && <Scoreboard gameId={game.getId()} playerId={currentPlayer.id} />}
             </Box>
         </>
     );

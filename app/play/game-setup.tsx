@@ -55,7 +55,7 @@ export function GameSetup({ players }: GameSetupProps) {
                         <Grid item md={6}>
                             <Typography variant="h4">Selected Players</Typography>
                             {selectedPlayers.map((p, i) => (
-                                <>
+                                <div key={i}>
                                     <Button key={i}
                                         fullWidth
                                         variant='contained'
@@ -69,8 +69,8 @@ export function GameSetup({ players }: GameSetupProps) {
                                             </Typography>
                                         </Box>
                                     </Button>
-                                    <input hidden type="text" name="players" value={p.id} />
-                                </>
+                                    <input hidden type="text" name="players" defaultValue={p.id} />
+                                </div>
                             ))}
                         </Grid>
                     </Grid>

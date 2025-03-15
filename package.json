@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -21,19 +21,23 @@
     "@mui/material": "^5.15.17",
     "@mui/material-nextjs": "^5.15.11",
     "@paralleldrive/cuid2": "^2.2.2",
-    "@prisma/client": "^5.13.0",
+    "@prisma/client": "^6.5.0",
     "@vercel/speed-insights": "^1.0.10",
-    "next": "14.2.3",
-    "react": "^18",
-    "react-dom": "^18"
+    "next": "15.1.7",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4",
     "eslint": "^8",
-    "eslint-config-next": "14.2.3",
-    "prisma": "^5.13.0",
-    "typescript": "^5"
+    "eslint-config-next": "15.1.7",
+    "prisma": "6.5.0",
+    "typescript": "^5.8.2"
+  },
+  "overrides": {
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.4"
   }
 }

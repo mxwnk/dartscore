@@ -6,7 +6,8 @@ import { DartGame } from "@/app/domain/dart-game";
 import { getGameById } from "@/app/db/actions";
 import { TurnBanner } from "./turn-banner";
 
-export default async function Game({ params }: { params: { id: string } }) {
+export default async function Game(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const game = DartGame.fromGameState(await getGameById(params.id));
     const currentPlayer = game.getCurrentPlayer();
 

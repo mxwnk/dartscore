@@ -34,9 +34,13 @@ export async function saveGame(players: PlayerDto[]) {
 export async function saveDartThrow({ turnId, dartThrow }: { turnId: number, dartThrow: DartThrow }) {
     return await prisma.throw.create({
         data: {
-            turnId,
             score: dartThrow.score,
             ring: dartThrow.ring,
+            turn: {
+                connect: {
+                    id: turnId
+                }
+            },
         }
     })
 }

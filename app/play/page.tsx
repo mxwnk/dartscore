@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import prisma from "@/lib/prisma";
 import { Navigation } from "../components/app-bar";
 import { GameSetup } from "./game-setup";

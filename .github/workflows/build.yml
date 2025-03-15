@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+        # must be set for prisma generate cmd
+        POSTGRES_PRISMA_URL: "postgresql://admin:password@localhost:5432/dart"
     permissions:
       contents: read
       packages: write

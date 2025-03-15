@@ -11,7 +11,9 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:migrate": "prisma migrate deploy",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "docker:start": "node server.js",
+    "predocker:start": "node ./node_modules/prisma/build/index.js migrate deploy"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",

@@ -20,6 +20,7 @@ jobs:
           node-version: "20"
       - run: npm install
       - run: npm run lint
+      - run: npm run db:generate
       - run: npm run build
   deploy:
       runs-on: ubuntu-latest

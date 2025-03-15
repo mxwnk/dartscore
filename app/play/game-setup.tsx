@@ -1,12 +1,10 @@
 'use client';
-import { Box, Button, Grid, Typography } from "@mui/material";
 import { startGame } from "./start-game";
-import { AddPlayerButton } from "./add-player";
+import { AddPlayerDialog } from "./add-player";
 import { PlayerWithName } from "./page";
 import { useState } from "react";
-import PersonIcon from '@mui/icons-material/Person';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import { Button } from "@/components/ui/button";
+import { CheckIcon, User, Plus } from 'lucide-react';
 
 type GameSetupProps = {
     players: PlayerWithName[];
@@ -14,71 +12,52 @@ type GameSetupProps = {
 
 export function GameSetup({ players }: GameSetupProps) {
     const [selectedPlayers, setSelectedPlayers] = useState<PlayerWithName[]>([]);
+    const [showAddPlayerDialog, setShowAddPlayerDialog] = useState(false);
 
-    function selectPlayer(player: PlayerWithName) {
-        setSelectedPlayers(prev => [...prev, player]);
-    }
-
-    function deselectPlayer(player: PlayerWithName) {
-        setSelectedPlayers(prev => prev.filter(p => p.id !== player.id));
+    function togglePlayer(player: PlayerWithName) {
+        if (selectedPlayers.some(sp => sp.id === player.id)) {
+            setSelectedPlayers(prev => prev.filter(p => p.id !== player.id));
+        } else {
+            setSelectedPlayers(prev => [...prev, player]);
+        }
     }
 
     return (
         <>
             <form action={startGame}>
-                <Box display='flex' marginX='auto' maxWidth='1024px' p={2} flexDirection='column' justifyItems='stretch'>
-                    <Typography variant="h2">Game Setup</Typography>
-                    <Grid container alignItems='stretch' spacing={2}>
-                        <Grid item md={6}>
-                            <Typography variant="h4">Available Players</Typography>
-                            {players.map((p, i) => {
-                                const disabled = selectedPlayers.some(sp => sp.id === p.id);
-                                return (
-                                    <Button key={i}
-                                        fullWidth
-                                        disabled={disabled}
-                                        variant={disabled ? 'contained' : 'outlined'}
-                                        sx={{ cursor: 'pointer', my: 1 }}
-                                        onClick={() => selectPlayer(p)}
-                                        startIcon={<PersonIcon />}
-                                        endIcon={<AddIcon />}>
-                                        <Box sx={{ mx: 'auto' }}>
-                                            <Typography variant="h5">
-                                                {p.name}
-                                            </Typography>
-                                        </Box>
-                                    </Button>
-                                )
-                            })}
-                            <AddPlayerButton></AddPlayerButton>
-                        </Grid>
-                        <Grid item md={6}>
-                            <Typography variant="h4">Selected Players</Typography>
-                            {selectedPlayers.map((p, i) => (
-                                <div key={i}>
-                                    <Button key={i}
-                                        fullWidth
-                                        variant='contained'
-                                        sx={{ cursor: 'pointer', my: 1 }}
-                                        onClick={() => deselectPlayer(p)}
-                                        startIcon={<PersonIcon />}
-                                        endIcon={<RemoveIcon />}>
-                                        <Box sx={{ mx: 'auto' }}>
-                                            <Typography variant="h5">
-                                                {p.name}
-                                            </Typography>
-                                        </Box>
-                                    </Button>
-                                    <input hidden type="text" name="players" defaultValue={p.id} />
-                                </div>
-                            ))}
-                        </Grid>
-                    </Grid>
-                    <Button disabled={selectedPlayers.length === 0} sx={{ mt: 8, mx: 'auto', width: '500px' }} type="submit" color="primary" variant='contained'>
-                        <Typography variant="h4">Start Game</Typography>
+                <div className="flex flex-col items-stretch mx-auto max-w-[1024px] p-2">
+                    <h2 className="text-6xl text-center">Game Setup</h2>
+                    <div className="grid items-stretch">
+                        <h3 className="text-4xl my-4">Game Mode</h3>
+
+                        <h3 className="text-4xl my-4">Players</h3>
+                        <Button type="button" className="w-full h-12 text-2xl" variant="secondary" onClick={() => setShowAddPlayerDialog(true)}>
+                            Add Player
+                        </Button>
+                        {players.map((p, i) => {
+                            const selected = selectedPlayers.some(sp => sp.id === p.id);
+                            return (
+                                <Button onClick={() => togglePlayer(p)}
+                                    variant={selected ? "default" : "outline"}
+                                    className="my-2 flex flex-row justify-between"
+                                    type="button" key={i}>
+                                    <User /> {p.name} {selected ? <CheckIcon /> : <Plus />}
+                                </Button>
+                            )
+                        })}
+                    </div>
+                    {selectedPlayers.map(p => <input key={p.id} hidden type="text" name="players" defaultValue={p.id} />)}
+                    <Button className="mt-8 h-18 text-5xl" disabled={selectedPlayers.length === 0}
+                        type="submit"
+                        variant="default">
+                        Start Game
                     </Button>
-                </Box>
+                </div >
             </form>
+            <AddPlayerDialog
+                showDialog={showAddPlayerDialog}
+                close={() => setShowAddPlayerDialog(false)}
+            />
         </>
     );
 }

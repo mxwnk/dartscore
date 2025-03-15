@@ -1,29 +1,28 @@
-'use client';
-import { Button, Dialog, DialogActions, DialogTitle, TextField } from "@mui/material";
-import { useState } from "react";
 import { submitPlayer } from "./submit-player";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-export function AddPlayerButton() {
-    const [showDialog, setShowDialog] = useState(false);
+export function AddPlayerDialog({ showDialog, close }: { showDialog: boolean, close: () => void }) {
     const onSubmit = async (formData: FormData) => {
+        console.log("submit");
         await submitPlayer(formData);
-        setShowDialog(false);
+        close();
     }
     return (
-        <>
-            <Dialog open={showDialog} onClose={() => setShowDialog(false)}>
-                <form action={onSubmit}>
-                    <DialogTitle>Add new player</DialogTitle>
-                    <TextField inputProps={{maxLength: 16}} autoFocus placeholder="Name" sx={{ p: 2 }} name="name"></TextField>
-                    <DialogActions>
-                        <Button onClick={() => setShowDialog(false)}>Cancel</Button>
-                        <Button variant="contained" type="submit">Add</Button>
-                    </DialogActions>
+        <Dialog open={showDialog}>
+            <DialogContent>
+                <form action={onSubmit} className="my-4">
+                    <DialogHeader>
+                        <DialogTitle>Add new player</DialogTitle>
+                    </DialogHeader>
+                    <Input maxLength={16} autoFocus placeholder="Name" name="name" />
+                    <DialogFooter>
+                        <Button variant="outline" onClick={close}>Cancel</Button>
+                        <Button type="submit">Add</Button>
+                    </DialogFooter>
                 </form>
-            </Dialog>
-            <Button fullWidth variant='outlined' onClick={() => setShowDialog(prev => !prev)}>
-                Add Player
-            </Button>
-        </>
+            </DialogContent>
+        </Dialog>
     )
 }

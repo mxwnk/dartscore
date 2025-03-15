@@ -1,12 +1,10 @@
 'use client';
-import { Box, Grid, Paper, Typography, useTheme } from "@mui/material";
 import { PlayerBadge } from "./player-badge";
 import { PlayerDto, } from "@/app/models/player";
 import { TurnDto, calcTotalScoreOfTurn } from "@/app/models/turn";
 import { ThrowDto } from "@/app/models/throw";
 import { PlayerState } from "@/app/domain/dart-game";
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-
 
 export type PlayerRowProps = {
     player: PlayerDto;
@@ -17,7 +15,6 @@ export type PlayerRowProps = {
 }
 
 export function PlayerRow(props: PlayerRowProps) {
-    const theme = useTheme();
     const hasWon = props.playerState === "won";
     const firstThrow = props.turn?.throws.at(0);
     const secondThrow = props.turn?.throws.at(1);
@@ -26,48 +23,39 @@ export function PlayerRow(props: PlayerRowProps) {
     function rowStyle() {
         switch (props.playerState) {
             case "overthrown":
-                return { backgroundColor: "#f48fb1", color: '#ffffff' };
+                return "border-3 border-red-400 bg-red-400 text-white"
             case "won":
-                return { backgroundColor: theme.palette.grey[200] };
+                return "bg-gray-300"
             case "playing":
-                return { border: `2px solid ${theme.palette.primary.main}` };
+                return "border-primary"
             default:
-                return {};
+                return "border-gray-200";
         }
     }
 
     return (
-        <Paper elevation={2} sx={{ display: 'flex', mb: 2, ...rowStyle() }}>
+        <div className={`shadow-md border-3 h-[84px] rounded-sm flex border-solid flex-row justify-between mb-5 pr-4 ${rowStyle()}`}>
             <PlayerBadge selected={props.playerState === 'playing'} />
-            <Grid container justifyContent='space-between'>
-                <Grid item xs={4} alignContent='center' alignItems='center'>
-                    <Box textAlign='center'>
-                        {!hasWon && <Typography variant='h4'>{props.missingScore}</Typography>}
-                        {hasWon && <EmojiEventsIcon />}
-                        <Typography variant='h6'>{props.player.name}</Typography>
-                    </Box>
-                </Grid>
-                <Grid item xs={4} textAlign='center'>
-                    <Grid container spacing={2} justifyContent='space-between' alignContent='center'>
-                        <Grid item xs={4}>
-                            <DartThrow throw={firstThrow} />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <DartThrow throw={secondThrow} />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <DartThrow throw={thirdThrow} />
-                        </Grid>
-                    </Grid>
-                    <Typography variant='h6'>{calcTotalScoreOfTurn(props.turn)}</Typography>
-                </Grid>
-                <Grid item xs={4} justifyContent='center' alignContent='center'>
-                    <Typography variant='h5' textAlign='center'>
-                        Ø{props.averageScore.toFixed(2)}
-                    </Typography>
-                </Grid>
-            </Grid>
-        </Paper>
+
+            <div className="flex flex-col content-center items-center">
+                {!hasWon && <h4 className="text-2xl">{props.missingScore}</h4>}
+                {hasWon && <EmojiEventsIcon />}
+                <h6 className="text-2xl">{props.player.name}</h6>
+            </div>
+
+            <div className="text-center">
+                <div className="grid gap-6 grid-cols-3 justify-between content-center">
+                    <DartThrow throw={firstThrow} />
+                    <DartThrow throw={secondThrow} />
+                    <DartThrow throw={thirdThrow} />
+                </div>
+                <h6 className="text-3xl">{calcTotalScoreOfTurn(props.turn)}</h6>
+            </div>
+
+            <h5 className="justify-center content-center text-5xl">
+                Ø{props.averageScore.toFixed(2)}
+            </h5>
+        </div>
     );
 }
 
@@ -76,7 +64,7 @@ function DartThrow(props: { throw: ThrowDto | undefined }) {
         return <></>;
     }
     return (
-        <Typography variant='h5'>{props.throw.ring}{props.throw.score}</Typography>
+        <h5 className="text-4xl">{props.throw.ring}{props.throw.score}</h5>
     )
 }
 

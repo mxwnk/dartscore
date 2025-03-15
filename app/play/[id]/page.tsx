@@ -1,7 +1,6 @@
 import { Scoreboard } from "@/app/play/[id]/score-board";
 import { PlayerRow } from "./player-row";
 import { Navigation } from "@/app/components/app-bar";
-import { Box } from "@mui/material";
 import { DartGame } from "@/app/domain/dart-game";
 import { getGameById } from "@/app/db/actions";
 import { TurnBanner } from "./turn-banner";
@@ -14,7 +13,7 @@ export default async function Game(props: { params: Promise<{ id: string }> }) {
     return (
         <>
             <Navigation title={`In Game: ${game.getPlayers().length} Player - ${game.getStartPoints()} Points`} />
-            <Box mt={2} px={1}>
+            <div className="mt-4 px-2">
                 {game.getPlayers().map((p, i) => <PlayerRow
                     key={i}
                     player={p}
@@ -25,7 +24,7 @@ export default async function Game(props: { params: Promise<{ id: string }> }) {
                 />)}
                 {currentPlayer && <TurnBanner missingScore={game.getMissingScore(currentPlayer.id)} rounds={game.getRounds()} />}
                 {currentPlayer && <Scoreboard gameId={game.getId()} playerId={currentPlayer.id} />}
-            </Box>
+            </div>
         </>
     );
 }

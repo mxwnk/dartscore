@@ -1,12 +1,11 @@
 'use client';
-import { Grid, Typography, Button, Dialog, TextField } from "@mui/material";
 import { useState } from "react";
 import { useGlobalKeydown } from "../../hooks/global-keydown";
 import { caseInsensitiveEquals } from "../../utils/string";
 import { submitThrow } from "@/app/play/[id]/sumit-throw";
 import { undoLastThrow } from "./undo";
 import { RingDto } from "@/app/models/ring";
-import { isNumber } from "@/app/utils/number";
+import { Button } from "@/components/ui/button";
 
 const scores = [...Array.from(Array(21).keys()), 25];
 
@@ -17,7 +16,6 @@ type ScoreboardProps = {
 
 export function Scoreboard(props: ScoreboardProps) {
   const [ring, setRing] = useState<RingDto | null>(null);
-  const [scoreField, setScoreField] = useState("");
   const toggleRing = (ring: RingDto) => {
     setRing(prev => {
       if (prev === ring) {
@@ -38,10 +36,6 @@ export function Scoreboard(props: ScoreboardProps) {
       toggleRing("D");
       return;
     }
-    if (isNumber(key)) {
-      setScoreField(prev => prev + key);
-      return;
-    }
   });
 
   async function onSumit(score: number) {
@@ -51,42 +45,30 @@ export function Scoreboard(props: ScoreboardProps) {
 
   return (
     <>
-      <Dialog open={false} onClose={() => setScoreField("")}>
-        <TextField
-          value={scoreField}
-          onChange={(e) => setScoreField(e.target.value)}
-          inputProps={{ maxLength: 3 }}
-          type="text"
-          autoFocus
-          placeholder="Score" sx={{ p: 2 }} name="name">
-        </TextField>
-      </Dialog>
-      <Grid sx={{ mb: 2 }} container spacing={1}>
+      <div className="mb-4 grid gap-1 grid-cols-6">
         {scores.map(s => (
-          <Grid key={s} item xs={2}>
-            <Button onClick={() => onSumit(s)} disabled={s === 25 && ring === "T"} sx={{ width: '100%', py: 2 }} variant='outlined'>
-              <Typography variant="h5">{s}</Typography>
-            </Button>
-          </Grid>
+          <Button onClick={() => onSumit(s)}
+            key={s}
+            className="py-8 w-[100%] text-2xl"
+            disabled={s === 25 && ring === "T"}
+            variant="outline">
+            {s}
+          </Button>
         ))}
-      </Grid>
-      <Grid container spacing={1}>
-        <Grid item md={4} lg={4} xs={6}>
-          <Button size="small" onClick={() => toggleRing("D")} color="info" sx={{ width: '100%', py: 2 }} variant={ring === "D" ? 'contained' : 'outlined'}>
-            <Typography variant="h5">Double</Typography>
-          </Button>
-        </Grid>
-        <Grid item md={4} lg={4} xs={6}>
-          <Button onClick={() => toggleRing("T")} sx={{ width: '100%', py: 2 }} variant={ring === "T" ? 'contained' : 'outlined'}>
-            <Typography variant="h5">Triple</Typography>
-          </Button>
-        </Grid>
-        <Grid item md={4} lg={4} xs={6}>
-          <Button onClick={() => undoLastThrow(props.gameId)} color="error" sx={{ width: '100%', py: 2 }} variant='outlined'>
-            <Typography variant="h5">Undo</Typography>
-          </Button>
-        </Grid>
-      </Grid>
+      </div>
+      <div className="mt-4 grid grid-cols-3 gap-1">
+        <Button className="w-[100%] h-18 py-4 text-4xl" onClick={() => toggleRing("D")} color="info"
+          variant={ring === "D" ? 'default' : 'outline'}>
+          Double
+        </Button>
+        <Button className="w-[100%] h-18 py-4 text-4xl" onClick={() => toggleRing("T")} color="info"
+          variant={ring === "T" ? 'default' : 'outline'}>
+          Triple
+        </Button>
+        <Button className="w-[100%] bg-red-400 h-18 py-4 text-4xl" onClick={() => undoLastThrow(props.gameId)} variant="destructive">
+          Undo
+        </Button>
+      </div>
     </>
   )
 }

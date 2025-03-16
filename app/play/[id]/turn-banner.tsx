@@ -1,6 +1,3 @@
-import { Paper, Typography } from "@mui/material";
-import { grey } from "@mui/material/colors";
-
 type TurnBannerProps = {
     rounds: number;
     missingScore: number;
@@ -10,9 +7,9 @@ export function TurnBanner({ rounds, missingScore }: TurnBannerProps) {
     const possibleCheckout = checkouts[missingScore];
     const checkout = possibleCheckout ? ` - Checkout: ${possibleCheckout}` : "";
     return (
-        <Paper sx={{ backgroundColor: grey[200], p: 2, mb: 2 }}>
-            <Typography variant="h6">Round <b>{rounds}</b>{checkout}</Typography>
-        </Paper>
+        <div className="bg-gray-300 rounded-sm p-4 mb-2">
+            <h6 className="text-3xl">Round <b>{rounds}</b>{checkout}</h6>
+        </div>
     )
 }
 

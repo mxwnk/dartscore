@@ -1,15 +1,14 @@
 'use client';
-import { Button, Paper, Typography, useTheme } from "@mui/material";
-import CrisisAlertIcon from '@mui/icons-material/CrisisAlert';
+import { Disc } from 'lucide-react';
+import Link from 'next/link';
 
 export function PlayButton() {
-  const theme = useTheme();
   return (
-    <Paper elevation={2} sx={{ cursor: 'pointer', bgcolor: theme.palette.primary.dark }}>
-      <Button sx={{width: '400px', display: 'flex', flexDirection: 'column'}} href="/play">
-        <CrisisAlertIcon sx={{ mt: 3, width: '80%', height: '80%', color: '#fff' }} />
-        <Typography color='white' textAlign='center' variant='h3'>Play</Typography>
-      </Button>
-    </Paper>
+    <div className="pointer w-[400px] rounded-2xl p-4 shadow-2xl bg-primary text-center">
+      <Link className="flex flex-col items-center" href="/play">
+        <Disc className="w-[80%] h-[80%] text-white" />
+        <h3 className="text-5xl text-white">Play</h3>
+      </Link>
+    </div>
   );
 }

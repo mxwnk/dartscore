@@ -4,7 +4,7 @@ import { PlayerDto, } from "@/app/models/player";
 import { TurnDto, calcTotalScoreOfTurn } from "@/app/models/turn";
 import { ThrowDto } from "@/app/models/throw";
 import { PlayerState } from "@/app/domain/dart-game";
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import { Trophy } from 'lucide-react';
 
 export type PlayerRowProps = {
     player: PlayerDto;
@@ -39,7 +39,7 @@ export function PlayerRow(props: PlayerRowProps) {
 
             <div className="flex flex-col content-center items-center">
                 {!hasWon && <h4 className="text-2xl">{props.missingScore}</h4>}
-                {hasWon && <EmojiEventsIcon />}
+                {hasWon && <Trophy />}
                 <h6 className="text-2xl">{props.player.name}</h6>
             </div>
 

@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic';
 import prisma from "@/lib/prisma";
 import { Navigation } from "../components/app-bar";
 import { GameSetup } from "./game-setup";
-import { Box } from "@mui/material";
 
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 
@@ -16,9 +15,9 @@ async function getPlayers() {
 export default async function PlayPage() {
     const players = await getPlayers();
     return (
-        <Box>
+        <>
             <Navigation title="Play Darts" />
             <GameSetup players={players} />
-        </Box>
+        </>
     );
 }

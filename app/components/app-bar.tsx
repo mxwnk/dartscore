@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { TargetIcon } from "lucide-react";
+import Link from "next/link";
 
 type NagivationProps = {
     title: string;
@@ -9,9 +10,9 @@ export function Navigation(props: NagivationProps) {
     return (
         <div className="bg-primary text-primary-foreground p-4 flex items-center">
             <Button variant="ghost" size="icon" asChild>
-                <a href="/">
+                <Link href="/">
                     <TargetIcon className="h-6 w-6" />
-                </a>
+                </Link>
             </Button>
             <h1 className="text-lg font-semibold ml-4 flex-grow">{props.title}</h1>
         </div>

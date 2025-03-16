@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres
+    container_name: dart_scoreboard_db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: <<username>>
+      POSTGRES_PASSWORD: <<password>>
+    volumes:
+      - db:/var/lib/postgresql/data 
+  dart_scoreboard:
+    image: mxwnk/dart-scoreboard
+    container_name: dart_scoreboard
+    ports:
+      - "3000:3000"
+    environment:
+      POSTGRES_URL: "postgres://<<username>>:<<password>>@dart_scoreboard_db:5432/dart_db"
+
+volumes:
+  db:

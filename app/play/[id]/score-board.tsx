@@ -16,6 +16,7 @@ type ScoreboardProps = {
 
 export function Scoreboard(props: ScoreboardProps) {
   const [ring, setRing] = useState<RingDto | null>(null);
+  const [disabled, setDisabled] = useState(false);
   const toggleRing = (ring: RingDto) => {
     setRing(prev => {
       if (prev === ring) {
@@ -39,8 +40,13 @@ export function Scoreboard(props: ScoreboardProps) {
   });
 
   async function onSumit(score: number) {
+    if (disabled) {
+      return;
+    }
+    setDisabled(true);
     await submitThrow(props.gameId, { score, ring, playerId: props.playerId });
     setRing(null);
+    setDisabled(false);
   }
 
   return (
@@ -49,7 +55,7 @@ export function Scoreboard(props: ScoreboardProps) {
         {scores.map(s => (
           <Button onClick={() => onSumit(s)}
             key={s}
-            className="py-8 w-[100%] text-2xl"
+            className="py-8 w-[100%] text-2xl cursor-pointer"
             disabled={s === 25 && ring === "T"}
             variant="secondary">
             {s}
@@ -57,15 +63,16 @@ export function Scoreboard(props: ScoreboardProps) {
         ))}
       </div>
       <div className="mt-4 grid grid-cols-3 gap-1">
-        <Button className="w-[100%] h-18 py-4 text-4xl" onClick={() => toggleRing("D")} color="info"
-          variant={ring === "D" ? 'default' : 'secondary'}>
+        <Button className="w-[100%] h-18 py-4 text-4xl cursor-pointer" onClick={() => toggleRing("D")} color="info"
+          variant={ring === "D" ? 'default' : 'secondary'}
+        >
           Double
         </Button>
-        <Button className="w-[100%] h-18 py-4 text-4xl" onClick={() => toggleRing("T")} color="info"
+        <Button className="w-[100%] h-18 py-4 text-4xl cursor-pointer" onClick={() => toggleRing("T")} color="info"
           variant={ring === "T" ? 'default' : 'secondary'}>
           Triple
         </Button>
-        <Button className="w-[100%] bg-red-400 h-18 py-4 text-4xl" onClick={() => undoLastThrow(props.gameId)}
+        <Button className="w-[100%] bg-red-400 h-18 py-4 text-4xl cursor-pointer" onClick={() => undoLastThrow(props.gameId)}
           variant="destructive">
           Undo
         </Button>

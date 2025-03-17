@@ -12,8 +12,8 @@ export default async function Game(props: { params: Promise<{ id: string }> }) {
 
     return (
         <>
-            <Navigation title={`In Game: ${game.getPlayers().length} Player - ${game.getStartpoints()} Points - ${game.getCheckout()} Out`} />
-            <div className="mt-4 px-2">
+            <Navigation title={`Game: ${game.getPlayers().length} Player - ${game.getStartpoints()} Points - ${game.getCheckout()} Out`} />
+            <div className="mt-4 px-2 max-w-[1800px] mx-auto">
                 {game.getPlayers().map((p, i) => <PlayerRow
                     key={i}
                     player={p}

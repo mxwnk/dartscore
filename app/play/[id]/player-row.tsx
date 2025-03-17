@@ -34,16 +34,16 @@ export function PlayerRow(props: PlayerRowProps) {
     }
 
     return (
-        <div className={`shadow-md border-3 h-[84px] rounded-sm flex border-solid flex-row justify-between mb-5 pr-4 ${rowStyle()}`}>
+        <div className={`shadow-md border-3 h-[84px] rounded-sm flex border-solid items-center flex-row justify-between mb-5 pr-4 ${rowStyle()}`}>
             <PlayerBadge selected={props.playerState === 'playing'} />
 
-            <div className="flex flex-col content-center items-center">
+            <div className="flex flex-col content-center items-center w-48">
                 {!hasWon && <h4 className="text-2xl">{props.missingScore}</h4>}
                 {hasWon && <Trophy />}
                 <h6 className="text-2xl">{props.player.name}</h6>
             </div>
 
-            <div className="text-center">
+            <div className="text-center w-32">
                 <div className="grid gap-1 grid-cols-3 justify-between content-center">
                     <DartThrow throw={firstThrow} />
                     <DartThrow throw={secondThrow} />

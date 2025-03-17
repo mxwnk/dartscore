@@ -31,8 +31,7 @@ export function GameSetup({ players }: GameSetupProps) {
                 <div className="flex flex-col items-stretch mx-auto max-w-[1024px] p-2">
                     <h2 className="text-6xl text-center">Game Setup</h2>
                     <div className="grid items-stretch">
-                        <h3 className="text-4xl my-4">Game Mode</h3>
-                        <h4 className="text-3xl my-4">Starting Points</h4>
+                        <h4 className="text-4xl my-4">Starting Points</h4>
                         <div className="grid grid-cols-2 gap-2">
                             <Button
                                 type="button"
@@ -49,7 +48,7 @@ export function GameSetup({ players }: GameSetupProps) {
                             </Button>
                             <input name="startpoints" readOnly type="number" hidden value={startpoints} />
                         </div>
-                        <h4 className="text-3xl my-4">Checkout</h4>
+                        <h4 className="text-4xl my-4">Checkout</h4>
                         <div className="grid grid-cols-2 gap-2 mt-2">
                             <Button type="button" className="w-full text-2xl cursor-pointer"
                                 variant={checkout === "Straight" ? "default" : "secondary"}

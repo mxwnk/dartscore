@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
 }
 
 model Player {
@@ -25,6 +25,7 @@ model Game {
   turns   Turn[]
 
   startpoints Int
+  checkout    Checkout @default(Straight)
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
@@ -53,4 +54,9 @@ model Throw {
 enum Ring {
   D
   T
+}
+
+enum Checkout {
+  Straight
+  Double
 }

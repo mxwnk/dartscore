@@ -51,21 +51,22 @@ export function Scoreboard(props: ScoreboardProps) {
             key={s}
             className="py-8 w-[100%] text-2xl"
             disabled={s === 25 && ring === "T"}
-            variant="outline">
+            variant="secondary">
             {s}
           </Button>
         ))}
       </div>
       <div className="mt-4 grid grid-cols-3 gap-1">
         <Button className="w-[100%] h-18 py-4 text-4xl" onClick={() => toggleRing("D")} color="info"
-          variant={ring === "D" ? 'default' : 'outline'}>
+          variant={ring === "D" ? 'default' : 'secondary'}>
           Double
         </Button>
         <Button className="w-[100%] h-18 py-4 text-4xl" onClick={() => toggleRing("T")} color="info"
-          variant={ring === "T" ? 'default' : 'outline'}>
+          variant={ring === "T" ? 'default' : 'secondary'}>
           Triple
         </Button>
-        <Button className="w-[100%] bg-red-400 h-18 py-4 text-4xl" onClick={() => undoLastThrow(props.gameId)} variant="destructive">
+        <Button className="w-[100%] bg-red-400 h-18 py-4 text-4xl" onClick={() => undoLastThrow(props.gameId)}
+          variant="destructive">
           Undo
         </Button>
       </div>

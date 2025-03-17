@@ -44,7 +44,7 @@ export function PlayerRow(props: PlayerRowProps) {
             </div>
 
             <div className="text-center">
-                <div className="grid gap-6 grid-cols-3 justify-between content-center">
+                <div className="grid gap-1 grid-cols-3 justify-between content-center">
                     <DartThrow throw={firstThrow} />
                     <DartThrow throw={secondThrow} />
                     <DartThrow throw={thirdThrow} />
@@ -52,8 +52,8 @@ export function PlayerRow(props: PlayerRowProps) {
                 <h6 className="text-3xl">{calcTotalScoreOfTurn(props.turn)}</h6>
             </div>
 
-            <h5 className="justify-center content-center text-5xl">
-                Ø{props.averageScore.toFixed(2)}
+            <h5 className="justify-center content-center text-2xl">
+                Ø {props.averageScore.toFixed(2)}
             </h5>
         </div>
     );
@@ -64,7 +64,7 @@ function DartThrow(props: { throw: ThrowDto | undefined }) {
         return <></>;
     }
     return (
-        <h5 className="text-4xl">{props.throw.ring}{props.throw.score}</h5>
+        <h5 className="text-2xl">{props.throw.ring}{props.throw.score}</h5>
     )
 }
 

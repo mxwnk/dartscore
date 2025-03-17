@@ -1,3 +1,4 @@
+import { Checkout } from "@prisma/client";
 import { saveDartThrow, saveGame, createNewTurn, deleteThrow, deleteTurn, setOverthrown, resetOverthrown } from "../db/actions";
 import { GameDto } from "../models/game";
 import { PlayerDto } from "../models/player";
@@ -14,13 +15,19 @@ export type DartThrow = {
     playerId: string;
 }
 
+export type NewGame = {
+    players: PlayerDto[],
+    startpoints: number,
+    checkout: Checkout
+}
+
 export class DartGame {
     static fromGameState(gameState: GameDto) {
         return new DartGame(gameState);
     }
 
-    static async startNewGame(players: PlayerDto[]) {
-        return await saveGame(players);
+    static async startNewGame(game: NewGame) {
+        return await saveGame(game);
     }
 
     private constructor(private gameState: GameDto) {
@@ -52,8 +59,12 @@ export class DartGame {
         return this.getCurrentScore(playerId) / playerTurns.length;
     }
 
-    public getStartPoints(): number {
+    public getStartpoints(): number {
         return this.gameState.startpoints;
+    }
+    
+    public getCheckout(): Checkout {
+        return this.gameState.checkout;
     }
 
     public getCurrentTurn(playerId: string): TurnDto | undefined {

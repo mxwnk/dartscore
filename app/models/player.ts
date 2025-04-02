@@ -1,3 +1,3 @@
-import { GameDto } from "./game";
+import { GameState } from "./game";
 
-export type PlayerDto = GameDto["players"]["0"];
+export type PlayerDto = GameState["players"]["0"];

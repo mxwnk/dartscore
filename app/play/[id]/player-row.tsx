@@ -44,7 +44,7 @@ export function PlayerRow(props: PlayerRowProps) {
             </div>
 
             <div className="text-center w-32">
-                <div className="grid gap-1 grid-cols-3 justify-between content-center">
+                <div className="grid gap-4 grid-cols-3 justify-between content-center">
                     <DartThrow throw={firstThrow} />
                     <DartThrow throw={secondThrow} />
                     <DartThrow throw={thirdThrow} />

@@ -1,8 +1,8 @@
 import { sum } from "../utils/number";
-import { GameDto } from "./game";
+import { GameState } from "./game";
 import { calcScoreOfThrow as calcTotalScoreOfThrow } from "./throw";
 
-export type TurnDto = GameDto["turns"]["0"];
+export type TurnDto = GameState["turns"]["0"];
 
 type SimpleTurnDto = Omit<TurnDto, "playerId" | "gameId">
 

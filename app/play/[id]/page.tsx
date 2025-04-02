@@ -23,7 +23,7 @@ export default async function Game(props: { params: Promise<{ id: string }> }) {
                     turn={game.getCurrentTurn(p.id)}
                 />)}
                 {currentPlayer && <TurnBanner missingScore={game.getMissingScore(currentPlayer.id)} rounds={game.getRounds()} />}
-                {currentPlayer && <Scoreboard gameId={game.getId()} playerId={currentPlayer.id} />}
+                {currentPlayer && <Scoreboard gameId={game.getId()} />}
             </div>
         </>
     );

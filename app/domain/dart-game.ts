@@ -1,6 +1,5 @@
 import { Checkout } from "@prisma/client";
-import { saveDartThrow, saveGame, createNewTurn, deleteThrow, deleteTurn, setOverthrown, resetOverthrown } from "../db/actions";
-import { GameDto } from "../models/game";
+import { GameState } from "../models/game";
 import { PlayerDto } from "../models/player";
 import { RingDto } from "../models/ring";
 import { calcScoreOfThrow } from "../models/throw";
@@ -12,7 +11,6 @@ export type PlayerState = "playing" | "won" | "waiting" | "overthrown";
 export type DartThrow = {
     ring: RingDto | null;
     score: number;
-    playerId: string;
 }
 
 export type NewGame = {
@@ -22,37 +20,38 @@ export type NewGame = {
 }
 
 export class DartGame {
-    static fromGameState(gameState: GameDto) {
+
+    static fromGameState(gameState: GameState) {
         return new DartGame(gameState);
     }
 
-    static async startNewGame(game: NewGame) {
-        return await saveGame(game);
-    }
-
-    private constructor(private gameState: GameDto) {
+    private constructor(private state: GameState) {
 
     }
 
     public getId() {
-        return this.gameState.id;
+        return this.state.id;
     }
 
     public isGameOver(): boolean {
-        return this.gameState.players.every(p => this.hasPlayerWon(p.id));
+        return this.state.players.every(p => this.hasPlayerWon(p.id));
+    }
+
+    public getGameState(): GameState {
+        return this.state;
     }
 
     public getRounds(): number {
-        const firstPlayer = this.gameState.players.at(0);
-        return this.gameState.turns.filter(t => t.playerId === firstPlayer?.id).length;
+        const firstPlayer = this.state.players.at(0);
+        return this.state.turns.filter(t => t.playerId === firstPlayer?.id).length;
     }
 
     public getMissingScore(playerId: string): number {
-        return this.gameState.startpoints - this.getCurrentScore(playerId);
+        return this.state.startpoints - this.getCurrentScore(playerId);
     }
 
     public getAverageScore(playerId: string): number {
-        const playerTurns = this.gameState.turns.filter(t => t.playerId === playerId);
+        const playerTurns = this.state.turns.filter(t => t.playerId === playerId);
         if (playerTurns.length === 0) {
             return 0;
         }
@@ -60,28 +59,28 @@ export class DartGame {
     }
 
     public getStartpoints(): number {
-        return this.gameState.startpoints;
+        return this.state.startpoints;
     }
-    
+
     public getCheckout(): Checkout {
-        return this.gameState.checkout;
+        return this.state.checkout;
     }
 
     public getCurrentTurn(playerId: string): TurnDto | undefined {
-        return this.gameState.turns.findLast(t => t.playerId === playerId);
+        return this.state.turns.findLast(t => t.playerId === playerId);
     }
 
     public hasPlayerWon(playerId: string) {
         const currentScore = this.getCurrentScore(playerId);
-        return currentScore === this.gameState.startpoints;
+        return currentScore === this.state.startpoints;
     }
 
     public getPlayers(): PlayerDto[] {
-        return this.gameState.players;
+        return this.state.players;
     }
 
     public getCurrentScore(playerId: string) {
-        return this.gameState.turns
+        return this.state.turns
             .filter(t => !t.overthrown && t.playerId === playerId)
             .flatMap(t => t.throws)
             .map(calcScoreOfThrow)
@@ -112,7 +111,7 @@ export class DartGame {
 
     public getCurrentPlayer(): PlayerDto | undefined {
         const allPlayers = this.getPlayers();
-        const lastTurn = this.gameState.turns.at(-1);
+        const lastTurn = this.state.turns.at(-1);
         if (!lastTurn) {
             return allPlayers.at(0);
         }
@@ -121,46 +120,18 @@ export class DartGame {
         if (lastTurn.throws?.length < 3 && !lastTurn?.overthrown) {
             return lastPlayer;
         }
-        return this.getNextPlayer(lastPlayer);
+        return undefined;
     }
 
-    public async addDartThrow(dartThrow: DartThrow) {
-        let currentTurn = this.gameState.turns.at(-1);
-        if (!currentTurn) {
-            return;
-        }
-        const currentPlayer = this.getPlayerById(currentTurn.playerId);
-        const newThrow = await saveDartThrow({ turnId: currentTurn.id, dartThrow });
-        currentTurn.throws = [...currentTurn.throws, newThrow];
-        if (this.getMissingScore(currentTurn.playerId) < 0) {
-            currentTurn = await setOverthrown(currentTurn.id);
-        }
-        const nextPlayer = this.getNextPlayer(currentPlayer);
-        if (this.isTurnOver(currentTurn) && nextPlayer) {
-            const newTurn = await createNewTurn({ gameId: this.getId(), playerId: nextPlayer.id })
-            this.gameState.turns = [...this.gameState.turns, newTurn];
-        }
-    }
-
-    public async undo() {
-        const allThrows = this.gameState.turns.flatMap(t => t.throws);
-        const lastThrow = allThrows.at(-1);
-        if (allThrows.length === 0 || !lastThrow) {
-            return;
-        }
-        await deleteThrow(lastThrow.id);
-        await resetOverthrown(lastThrow.turnId);
-        const currentTurn = this.gameState.turns.at(-1);
-        if (currentTurn && lastThrow.turnId !== currentTurn?.id) {
-            deleteTurn(currentTurn.id);
-        }
-    }
-
-    private getNextPlayer(currentPlayer: PlayerDto): PlayerDto | undefined {
+    public getNextPlayer(): PlayerDto | undefined {
         const allPlayers = this.getPlayers();
-        const lastPlayerIndex = allPlayers.findIndex(p => p.id === currentPlayer.id);
+        const currentTurn = this.state.turns.at(-1);
+        if (!currentTurn) {
+            return allPlayers.at(0);
+        }
+        const currentPlayerIndex = allPlayers.findIndex(p => p.id === currentTurn.playerId);
         for (let index = 1; index <= allPlayers.length + 1; index++) {
-            const nextPlayerIndex = (lastPlayerIndex + index) % allPlayers.length;
+            const nextPlayerIndex = (currentPlayerIndex + index) % allPlayers.length;
             const nextPlayer = allPlayers.at(nextPlayerIndex) as PlayerDto;
             if (!this.hasPlayerWon(nextPlayer.id)) {
                 return nextPlayer;
@@ -169,7 +140,25 @@ export class DartGame {
         return undefined;
     }
 
-    private isTurnOver(turn: TurnDto) {
-        return turn.throws.length === 3 || turn.overthrown || this.hasPlayerWon(turn.playerId);
+    public isWrongCheckout(turn: TurnDto) {
+        if (this.state.checkout === "Straight") {
+            return false;
+        }
+        const missingScore = this.getMissingScore(turn.playerId);
+        if (missingScore >= 2) {
+            return false;
+        }
+        if (missingScore === 1) {
+            return true;
+        }
+        return turn.throws.at(-1)!.ring !== "D";
+    }
+
+    public isTurnOver() {
+        const currentTurn = this.state.turns.at(-1);
+        if (!currentTurn) {
+            return false;
+        }
+        return currentTurn.throws.length === 3 || currentTurn.overthrown || this.hasPlayerWon(currentTurn.playerId);
     }
 }

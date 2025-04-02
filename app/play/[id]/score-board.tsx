@@ -11,7 +11,6 @@ const scores = [...Array.from(Array(21).keys()), 25];
 
 type ScoreboardProps = {
   gameId: string;
-  playerId: string;
 };
 
 export function Scoreboard(props: ScoreboardProps) {
@@ -44,7 +43,7 @@ export function Scoreboard(props: ScoreboardProps) {
       return;
     }
     setDisabled(true);
-    await submitThrow(props.gameId, { score, ring, playerId: props.playerId });
+    await submitThrow(props.gameId, { score, ring });
     setRing(null);
     setDisabled(false);
   }

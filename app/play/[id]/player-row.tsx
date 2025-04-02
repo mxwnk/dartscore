@@ -34,16 +34,16 @@ export function PlayerRow(props: PlayerRowProps) {
     }
 
     return (
-        <div className={`shadow-md border-3 h-[84px] rounded-sm flex border-solid items-center flex-row justify-between mb-5 pr-4 ${rowStyle()}`}>
-            <PlayerBadge selected={props.playerState === 'playing'} />
+        <div className={`shadow-md border-3 h-[84px] rounded-sm grid grid-cols-[24px_1fr_2fr_1fr] border-solid items-center row gap-3 justify-between mb-5 pr-4 ${rowStyle()}`}>
+            <PlayerBadge state={props.playerState} />
 
-            <div className="flex flex-col content-center items-center w-48">
+            <div className="flex flex-col content-center items-center">
                 {!hasWon && <h4 className="text-2xl">{props.missingScore}</h4>}
                 {hasWon && <Trophy />}
                 <h6 className="text-2xl">{props.player.name}</h6>
             </div>
 
-            <div className="text-center w-32">
+            <div className="text-center grid-grow">
                 <div className="grid gap-4 grid-cols-3 justify-between content-center">
                     <DartThrow throw={firstThrow} />
                     <DartThrow throw={secondThrow} />
@@ -52,7 +52,7 @@ export function PlayerRow(props: PlayerRowProps) {
                 <h6 className="text-3xl">{calcTotalScoreOfTurn(props.turn)}</h6>
             </div>
 
-            <h5 className="justify-center content-center text-2xl">
+            <h5 className="justify-center flex-grow text-center content-center text-2xl">
                 Ø {props.averageScore.toFixed(2)}
             </h5>
         </div>

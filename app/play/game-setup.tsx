@@ -36,13 +36,13 @@ export function GameSetup({ players }: GameSetupProps) {
                             <Button
                                 type="button"
                                 className="w-full text-2xl cursor-pointer"
-                                variant={startpoints === 301 ? "default" : "secondary"}
+                                variant={startpoints === 301 ? "secondary" : "outline"}
                                 onClick={() => setStartpoints(301)}>
                                 301
                             </Button>
                             <Button type="button"
                                 className="w-full text-2xl cursor-pointer"
-                                variant={startpoints === 501 ? "default" : "secondary"}
+                                variant={startpoints === 501 ? "secondary" : "outline"}
                                 onClick={() => setStartpoints(501)}>
                                 501
                             </Button>
@@ -51,12 +51,12 @@ export function GameSetup({ players }: GameSetupProps) {
                         <h4 className="text-4xl my-4">Checkout</h4>
                         <div className="grid grid-cols-2 gap-2 mt-2">
                             <Button type="button" className="w-full text-2xl cursor-pointer"
-                                variant={checkout === "Straight" ? "default" : "secondary"}
+                                variant={checkout === "Straight" ? "secondary" : "outline"}
                                 onClick={() => setCheckout("Straight")}>
                                 Single
                             </Button>
                             <Button
-                                variant={checkout === "Double" ? "default" : "secondary"}
+                                variant={checkout === "Double" ? "secondary" : "outline"}
                                 type="button" className="w-full text-2xl cursor-pointer" onClick={() => setCheckout("Double")}>
                                 Double
                             </Button>
@@ -70,7 +70,7 @@ export function GameSetup({ players }: GameSetupProps) {
                             const selected = selectedPlayers.some(sp => sp.id === p.id);
                             return (
                                 <Button onClick={() => togglePlayer(p)}
-                                    variant={selected ? "default" : "outline"}
+                                    variant={selected ? "secondary" : "outline"}
                                     className="my-2 flex flex-row justify-between cursor-pointer"
                                     type="button" key={i}>
                                     <User /> {p.name} {selected ? <CheckIcon /> : <Plus />}

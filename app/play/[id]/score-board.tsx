@@ -74,7 +74,9 @@ export function Scoreboard(props: ScoreboardProps) {
           variant={ring === "T" ? 'default' : 'secondary'}>
           Triple
         </Button>
-        <Button className="w-[100%] bg-red-400 h-18 py-4 text-4xl cursor-pointer" onClick={() => undoLastThrow(props.gameId)}
+        <Button
+          className="w-[100%] bg-red-400 h-18 py-4 text-4xl cursor-pointer"
+          onClick={() => { navigator.vibrate(100); undoLastThrow(props.gameId); }}
           variant="destructive">
           Undo
         </Button>

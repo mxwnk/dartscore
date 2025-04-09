@@ -53,7 +53,7 @@ export function Scoreboard(props: ScoreboardProps) {
       <div className="mb-4 grid gap-1 grid-cols-6">
         {scores.map(s => (
           <Button onClick={() => {
-            navigator.vibrate(200);
+            navigator.vibrate(100);
             onSumit(s);
           }}
             key={s}

@@ -42,9 +42,9 @@ describe("Game Projection", () => {
 
         expect(view.players[0].average).toBe(6);
         expect(view.players[0].remaining).toBe(295);
-        expect(view.players[0].hasWon).toBe(false);
-        expect(view.players[0].currentTurn.total).toBe(6);
-        expect(view.players[0].currentTurn.darts).toEqual([
+        expect(view.players[0].state).toBe(false);
+        expect(view.players[0].currentTurn?.total).toBe(6);
+        expect(view.players[0].currentTurn?.darts).toEqual([
             { score: 1, ring: undefined },
             { score: 1, ring: "D"},
             { score: 1, ring: "T"},
@@ -53,7 +53,7 @@ describe("Game Projection", () => {
 
     it("should mark current winner", async () => {
         const events = [
-            gameCreatedEvent({ gameId, startingPoints: 1, checkout }),
+            gameCreatedEvent({ gameId, startpoints: 1, checkout }),
             playerAddedEvent({ name: "Homer", playerId: "1", gameId }),
             dartThrownEvent({ gameId, payload: { score: 1, playerId: "1", overthrown: false, ring: undefined } }),
         ];
@@ -61,12 +61,12 @@ describe("Game Projection", () => {
 
         const view = projection.toView();
 
-        expect(view.players[0].hasWon).toBe(true);
+        expect(view.players[0].state).toBe("won");
     });
 
     function twoPlayerGameSetup() {
         return [
-            gameCreatedEvent({ gameId, startingPoints, checkout }),
+            gameCreatedEvent({ gameId, startpoints, checkout }),
             playerAddedEvent({ name: "Homer", playerId: "1", gameId }),
             playerAddedEvent({ name: "Bart", playerId: "2", gameId })
         ];

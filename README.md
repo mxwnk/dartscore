@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🎯 Dart Scoreboard 
+
+Dart Scoreboard is a web application for managing and displaying scores during a game of darts. Built with Next.js, the project was bootstrapped using `create-next-app`.
+
+![Image](./doc/scoreboard.png)
+
+## Features
+
+- 🎯 Score Tracking: Easily input and update scores during gameplay.
+- 🖥️ User-Friendly Interface: Simple, intuitive UI designed for quick interaction.
+- ⚡ Real-Time Updates: Automatically reflects changes to scores as they happen.
+
+## Requirements
+
+- [node.js](https://nodejs.org/en)
+- [npm](https://npmjs.com/)
+- [docker](https://www.docker.com/)
 
 ## Getting Started
 
-First, run the development server:
+- Run `git clone https://github.com/mxwnk/dart-scoreboard.git` to get the repo
+- Run `cp .env-example .env` to init local environment
+- Run `npm install` to get all dependencies
+- Run `npm run db:up` to start the postgresql db
+- Run `npm run db:push` to migrate the db
+- Run `npm run dev` to start dev environment
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Deployment
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+To create an optimized production build:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Run `npm run build` 
+- Run `npm run start`
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

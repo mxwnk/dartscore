@@ -1,9 +1,10 @@
 import { createId } from '@paralleldrive/cuid2';
-import { dartThrownEvent, DartThrown, DomainEvent, GameCreated, gameCreatedEvent, PlayerAdded, playerAddedEvent, Checkout } from "./events";
+import { dartThrownEvent, DartThrown, DomainEvent, GameCreated, gameCreatedEvent, PlayerAdded, playerAddedEvent } from "./events";
 import { sum } from '../utils/number';
 import { Turn } from '../models/turn';
 import { calcScore, Dart } from '../models/dart';
 import { Player } from '../models/player';
+import { Checkout } from '../models/checkout';
 
 export class Game {
     private id: string;

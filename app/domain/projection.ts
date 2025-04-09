@@ -1,8 +1,9 @@
+import { Checkout } from "../models/checkout";
 import { calcScore, Dart } from "../models/dart";
 import { PlayerState } from "../models/player";
 import { Turn } from "../models/turn";
 import { sum } from "../utils/number";
-import { Checkout, DartThrown, DomainEvent, GameCreated, PlayerAdded } from "./events";
+import { DartThrown, DomainEvent, GameCreated, PlayerAdded } from "./events";
 
 export type GameView = {
     gameId: string;

@@ -5,7 +5,7 @@ import { PlayerWithName } from "./page";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, User, Plus } from 'lucide-react';
-import { Checkout } from "@prisma/client";
+import { Checkout } from "../models/checkout";
 
 type GameSetupProps = {
     players: PlayerWithName[];
@@ -15,7 +15,7 @@ export function GameSetup({ players }: GameSetupProps) {
     const [selectedPlayers, setSelectedPlayers] = useState<PlayerWithName[]>([]);
     const [showAddPlayerDialog, setShowAddPlayerDialog] = useState(false);
     const [startpoints, setStartpoints] = useState<number>(301);
-    const [checkout, setCheckout] = useState<Checkout>(Checkout.Straight);
+    const [checkout, setCheckout] = useState<Checkout>("Straight");
 
     function togglePlayer(player: PlayerWithName) {
         if (selectedPlayers.some(sp => sp.id === player.id)) {

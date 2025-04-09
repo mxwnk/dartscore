@@ -1,3 +1,1 @@
-import { ThrowDto } from "./throw";
-
-export type RingDto = ThrowDto["ring"];
+export type Ring = "D" | "T" | undefined;

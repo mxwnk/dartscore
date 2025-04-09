@@ -1,30 +1,32 @@
 import { Scoreboard } from "@/app/play/[id]/score-board";
 import { PlayerRow } from "./player-row";
 import { Navigation } from "@/app/components/app-bar";
-import { DartGame } from "@/app/domain/dart-game";
-import { getGameById } from "@/app/db/actions";
-import { TurnBanner } from "./turn-banner";
+import { RoundBanner } from "./turn-banner";
+import { repository } from "@/app/db/repository";
+import { EventLog } from "./event-log";
 
 export default async function Game(props: { params: Promise<{ id: string }> }) {
     const params = await props.params;
-    const game = DartGame.fromGameState(await getGameById(params.id));
-    const currentPlayer = game.getCurrentPlayer();
+    const gameId = params.id;
+    const gameProjection = await repository.getProjection(gameId);
+    const gameView = gameProjection.toView();
 
     return (
         <>
-            <Navigation title={`Game: ${game.getPlayers().length} Player - ${game.getStartpoints()} Points - ${game.getCheckout()} Out`} />
+            <Navigation title={`Game: ${gameView.players.length} Player - ${gameView.startpoints} Points - ${gameView.checkout} Out`} />
             <div className="mt-4 px-2 max-w-[1800px] mx-auto">
-                {game.getPlayers().map((p, i) => <PlayerRow
+                {gameView.players.map((p, i) => <PlayerRow
                     key={i}
-                    player={p}
-                    playerState={game.getPlayerState(p.id)}
-                    missingScore={game.getMissingScore(p.id)}
-                    averageScore={game.getAverageScore(p.id)}
-                    turn={game.getCurrentTurn(p.id)}
+                    state={p.state}
+                    name={p.name}
+                    remaining={p.remaining}
+                    average={p.average}
+                    turn={p.currentTurn}
                 />)}
-                {currentPlayer && <TurnBanner missingScore={game.getMissingScore(currentPlayer.id)} rounds={game.getRounds()} />}
-                {currentPlayer && <Scoreboard gameId={game.getId()} />}
+                <RoundBanner remaining={gameView.round.remaining} round={gameView.round.number} />
+                <Scoreboard gameId={gameId} />
             </div>
+            <EventLog gameId={gameId} />
         </>
     );
 }

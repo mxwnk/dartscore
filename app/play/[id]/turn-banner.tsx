@@ -1,14 +1,14 @@
-type TurnBannerProps = {
-    rounds: number;
-    missingScore: number;
+type RoundBannerProps = {
+    round: number;
+    remaining: number;
 }
 
-export function TurnBanner({ rounds, missingScore }: TurnBannerProps) {
-    const possibleCheckout = checkouts[missingScore];
+export function RoundBanner({round, remaining}: RoundBannerProps) {
+    const possibleCheckout = checkouts[remaining];
     const checkout = possibleCheckout ? ` - Checkout: ${possibleCheckout}` : "";
     return (
-        <div className="bg-gray-300 rounded-sm p-4 mb-2">
-            <h6 className="text-3xl">Round <b>{rounds}</b>{checkout}</h6>
+        <div className="bg-gray-300 rounded-sm p-3 mb-2">
+            <h6 className="lg:text-3xl text-2xl">Round <b>{round}</b>{checkout}</h6>
         </div>
     )
 }

@@ -5,20 +5,19 @@ import { Button } from "@/components/ui/button";
 
 export function AddPlayerDialog({ showDialog, close }: { showDialog: boolean, close: () => void }) {
     const onSubmit = async (formData: FormData) => {
-        console.log("submit");
         await submitPlayer(formData);
         close();
     }
     return (
         <Dialog open={showDialog}>
             <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Add new player</DialogTitle>
+                </DialogHeader>
                 <form action={onSubmit} className="my-4">
-                    <DialogHeader>
-                        <DialogTitle>Add new player</DialogTitle>
-                    </DialogHeader>
-                    <Input maxLength={16} autoFocus placeholder="Name" name="name" />
+                    <Input className="mb-8" type="text" maxLength={16} autoFocus placeholder="Name" name="name" />
                     <DialogFooter>
-                        <Button variant="outline" onClick={close}>Cancel</Button>
+                        <Button type="button" variant="outline" onClick={close}>Cancel</Button>
                         <Button type="submit">Add</Button>
                     </DialogFooter>
                 </form>

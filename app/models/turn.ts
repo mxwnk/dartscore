@@ -1,18 +1,3 @@
-import { sum } from "../utils/number";
-import { GameState } from "./game";
-import { calcScoreOfThrow as calcTotalScoreOfThrow } from "./throw";
+import { Dart } from "./dart";
 
-export type TurnDto = GameState["turns"]["0"];
-
-type SimpleTurnDto = Omit<TurnDto, "playerId" | "gameId">
-
-export function calcTotalScoreOfTurns(turns: SimpleTurnDto[]) {
-    return turns.filter(t => !t.overthrown).flatMap(t => t.throws).map(calcTotalScoreOfThrow).reduce(sum, 0);
-}
-
-export function calcTotalScoreOfTurn(turn?: SimpleTurnDto) {
-    if (!turn || turn.throws?.length === 0) {
-        return null;
-    }
-    return turn?.throws.map(calcTotalScoreOfThrow).reduce(sum, 0);
-}
+export type Turn = { darts: [Dart?, Dart?, Dart?], overthrown: boolean };

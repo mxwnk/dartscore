@@ -1,3 +1,6 @@
-import { GameState } from "./game";
+export type Player = {
+    id: string;
+    name: string;
+}
 
-export type PlayerDto = GameState["players"]["0"];
+export type PlayerState = "playing" | "overthrown" | "won" | "waiting";

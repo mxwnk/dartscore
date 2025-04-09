@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { useGlobalKeydown } from "../../hooks/global-keydown";
 import { caseInsensitiveEquals } from "../../utils/string";
-import { submitThrow } from "@/app/play/[id]/sumit-throw";
+import { submitDart } from "@/app/play/[id]/submit-dart";
 import { undoLastThrow } from "./undo";
-import { RingDto } from "@/app/models/ring";
+import { Ring } from "@/app/models/ring";
 import { Button } from "@/components/ui/button";
 
 const scores = [...Array.from(Array(21).keys()), 25];
@@ -14,12 +14,12 @@ type ScoreboardProps = {
 };
 
 export function Scoreboard(props: ScoreboardProps) {
-  const [ring, setRing] = useState<RingDto | null>(null);
+  const [ring, setRing] = useState<Ring | undefined>(undefined);
   const [disabled, setDisabled] = useState(false);
-  const toggleRing = (ring: RingDto) => {
+  const toggleRing = (ring: Ring) => {
     setRing(prev => {
       if (prev === ring) {
-        return null;
+        return undefined;
       }
       return ring;
     });
@@ -43,8 +43,8 @@ export function Scoreboard(props: ScoreboardProps) {
       return;
     }
     setDisabled(true);
-    await submitThrow(props.gameId, { score, ring });
-    setRing(null);
+    await submitDart(props.gameId, { score, ring });
+    setRing(undefined);
     setDisabled(false);
   }
 
@@ -52,7 +52,10 @@ export function Scoreboard(props: ScoreboardProps) {
     <>
       <div className="mb-4 grid gap-1 grid-cols-6">
         {scores.map(s => (
-          <Button onClick={() => onSumit(s)}
+          <Button onClick={() => {
+            navigator.vibrate(200);
+            onSumit(s);
+          }}
             key={s}
             className="py-8 w-[100%] text-2xl cursor-pointer"
             disabled={s === 25 && ring === "T"}

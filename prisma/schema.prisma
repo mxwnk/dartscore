@@ -11,52 +11,15 @@ model Player {
   id   String @id @default(cuid())
   name String
 
-  games Game[]
+  createdAt DateTime @default(now()) @map(name: "created_at")
+}
+
+
+model GameEvent {
+  id      String @id @default(cuid())
+  gameId  String
+  type    String
+  payload Json
 
   createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-  Turn      Turn[]
-}
-
-model Game {
-  id String @id @default(cuid())
-
-  players Player[]
-  turns   Turn[]
-
-  startpoints Int
-  checkout    Checkout @default(Straight)
-
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
-}
-
-model Turn {
-  id         Int     @id @default(autoincrement())
-  throws     Throw[]
-  overthrown Boolean
-
-  player   Player @relation(fields: [playerId], references: [id])
-  playerId String
-
-  game   Game   @relation(fields: [gameId], references: [id])
-  gameId String
-}
-
-model Throw {
-  id     Int   @id @default(autoincrement())
-  score  Int
-  ring   Ring?
-  turn   Turn  @relation(fields: [turnId], references: [id])
-  turnId Int
-}
-
-enum Ring {
-  D
-  T
-}
-
-enum Checkout {
-  Straight
-  Double
 }

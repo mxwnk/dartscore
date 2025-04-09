@@ -1,4 +1,4 @@
-import { PlayerState } from "@/app/domain/dart-game";
+import { PlayerState } from "@/app/models/player";
 
 export function PlayerBadge({ state }: { state: PlayerState; }) {
     const badgeColor = getColorByState(state);

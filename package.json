@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest",
     "db:up": "docker compose up -d",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
@@ -29,6 +30,7 @@
     "@vercel/speed-insights": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "env-cmd": "^10.1.0",
     "lucide-react": "^0.482.0",
     "next": "15.2.2",
     "postcss": "^8.5.3",
@@ -39,12 +41,14 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.6.0",
     "@types/node": "^22",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
     "prisma": "6.5.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9"
   }
 }

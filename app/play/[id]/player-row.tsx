@@ -1,70 +1,69 @@
 'use client';
 import { PlayerBadge } from "./player-badge";
-import { PlayerDto, } from "@/app/models/player";
-import { TurnDto, calcTotalScoreOfTurn } from "@/app/models/turn";
-import { ThrowDto } from "@/app/models/throw";
-import { PlayerState } from "@/app/domain/dart-game";
 import { Trophy } from 'lucide-react';
+import { CurrentTurnView } from "@/app/domain/projection";
+import { PlayerState } from "@/app/models/player";
+import { Dart } from "@/app/models/dart";
 
 export type PlayerRowProps = {
-    player: PlayerDto;
-    playerState: PlayerState;
-    missingScore: number;
-    averageScore: number;
-    turn?: TurnDto;
+    name: string;
+    state: PlayerState;
+    remaining: number;
+    average: number;
+    turn?: CurrentTurnView;
 }
 
 export function PlayerRow(props: PlayerRowProps) {
-    const hasWon = props.playerState === "won";
-    const firstThrow = props.turn?.throws.at(0);
-    const secondThrow = props.turn?.throws.at(1);
-    const thirdThrow = props.turn?.throws.at(2);
 
     function rowStyle() {
-        switch (props.playerState) {
+        switch (props.state) {
             case "overthrown":
                 return "border-3 border-red-400 bg-red-400 text-white"
             case "won":
-                return "bg-gray-300"
+                return "border-gray-300 bg-gray-300"
             case "playing":
                 return "border-primary"
-            default:
+            case "waiting":
                 return "border-gray-200";
         }
     }
 
     return (
         <div className={`shadow-md border-3 h-[84px] rounded-sm grid grid-cols-[24px_1fr_2fr_1fr] border-solid items-center row gap-3 justify-between mb-5 pr-4 ${rowStyle()}`}>
-            <PlayerBadge state={props.playerState} />
-
+            <PlayerBadge state={props.state} />
+            
             <div className="flex flex-col content-center items-center">
-                {!hasWon && <h4 className="text-2xl">{props.missingScore}</h4>}
-                {hasWon && <Trophy />}
-                <h6 className="text-2xl">{props.player.name}</h6>
+                {props.state !== "won" && <h4 className="text-2xl">{props.remaining}</h4>}
+                {props.state === "won" && <Trophy />}
+                <h6 className="text-2xl">{props.name}</h6>
             </div>
 
-            <div className="text-center grid-grow">
-                <div className="grid gap-4 grid-cols-3 justify-between content-center">
-                    <DartThrow throw={firstThrow} />
-                    <DartThrow throw={secondThrow} />
-                    <DartThrow throw={thirdThrow} />
-                </div>
-                <h6 className="text-3xl">{calcTotalScoreOfTurn(props.turn)}</h6>
-            </div>
+            {props.turn && (
+                <>
+                    <div className="text-center grid-grow">
+                        <div className="grid gap-4 grid-cols-3 justify-between content-center">
+                            <DartThrow dart={props.turn.darts[0]} />
+                            <DartThrow dart={props.turn.darts[1]} />
+                            <DartThrow dart={props.turn.darts[2]} />
+                        </div>
+                        <h6 className="text-3xl">{props.turn.total}</h6>
+                    </div>
 
-            <h5 className="justify-center flex-grow text-center content-center text-2xl">
-                Ø {props.averageScore.toFixed(2)}
-            </h5>
+                    <h5 className="justify-center flex-grow text-center content-center text-2xl">
+                        Ø {props.average}
+                    </h5>
+                </>
+            )}
         </div>
     );
 }
 
-function DartThrow(props: { throw: ThrowDto | undefined }) {
-    if (!props.throw) {
+function DartThrow(props: { dart: Dart | undefined }) {
+    if (!props.dart) {
         return <></>;
     }
     return (
-        <h5 className="text-2xl">{props.throw.ring}{props.throw.score}</h5>
+        <h5 className="text-2xl">{props.dart.ring}{props.dart.score}</h5>
     )
 }
 

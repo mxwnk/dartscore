@@ -4,25 +4,47 @@ import { AddPlayerDialog } from "./add-player";
 import { PlayerWithName } from "./page";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckIcon, User, Plus } from 'lucide-react';
+import { CheckIcon, User, Plus, MoveVertical } from 'lucide-react';
 import { Checkout } from "../models/checkout";
 
 type GameSetupProps = {
     players: PlayerWithName[];
 }
 
-export function GameSetup({ players }: GameSetupProps) {
-    const [selectedPlayers, setSelectedPlayers] = useState<PlayerWithName[]>([]);
+export function GameSetup({ players: playerList }: GameSetupProps) {
+    const [players, setPlayers] = useState(playerList);
+    const [selectedPlayerIds, setSelectedPlayerIds] = useState<string[]>([]);
     const [showAddPlayerDialog, setShowAddPlayerDialog] = useState(false);
     const [startpoints, setStartpoints] = useState<number>(301);
     const [checkout, setCheckout] = useState<Checkout>("Straight");
 
     function togglePlayer(player: PlayerWithName) {
-        if (selectedPlayers.some(sp => sp.id === player.id)) {
-            setSelectedPlayers(prev => prev.filter(p => p.id !== player.id));
+        if (selectedPlayerIds.some(id => id === player.id)) {
+            setSelectedPlayerIds(prev => prev.filter(id => id !== player.id));
         } else {
-            setSelectedPlayers(prev => [...prev, player]);
+            setSelectedPlayerIds(prev => [...prev, player.id]);
         }
+    }
+
+    function enableDropping(event: React.DragEvent<HTMLElement>) {
+        event.preventDefault();
+    }
+
+    function onPlayerDrag(event: React.DragEvent<HTMLElement>) {
+        event.dataTransfer.setData('playerId', event.currentTarget.id);
+    }
+
+    function onPlayerDrop(event: React.DragEvent<HTMLElement>) {
+        const targetId = event.currentTarget.id;
+        const sourceId = event.dataTransfer.getData("playerId");
+        const targetIndex = players.findIndex(p => p.id === targetId)!;
+        const sourceIndex = players.findIndex(p => p.id === sourceId)!;
+        const target = players[targetIndex];
+        const source = players[sourceIndex];
+        const newPlayerList = [...players];
+        newPlayerList[targetIndex] = source;
+        newPlayerList[sourceIndex] = target;
+        setPlayers(newPlayerList);
     }
 
     return (
@@ -67,19 +89,26 @@ export function GameSetup({ players }: GameSetupProps) {
                             Add Player
                         </Button>
                         {players.map((p, i) => {
-                            const selected = selectedPlayers.some(sp => sp.id === p.id);
+                            const selected = selectedPlayerIds.some(id => id === p.id);
                             return (
                                 <Button onClick={() => togglePlayer(p)}
+                                    id={p.id}
                                     variant={selected ? "secondary" : "outline"}
+                                    draggable
+                                    onDragStart={onPlayerDrag}
+                                    onDragOver={enableDropping}
+                                    onDrop={onPlayerDrop}
                                     className="my-2 flex flex-row justify-between cursor-pointer"
                                     type="button" key={i}>
-                                    <User /> {p.name} {selected ? <CheckIcon /> : <Plus />}
+                                    {selected ? <MoveVertical /> : <User />} {p.name} {selected ? <CheckIcon /> : <Plus />}
                                 </Button>
                             )
                         })}
                     </div>
-                    {selectedPlayers.map(p => <input key={p.id} hidden type="text" name="players" defaultValue={p.id} />)}
-                    <Button className="mt-8 h-18 text-5xl cursor-pointer" disabled={selectedPlayers.length === 0}
+                    {players
+                        .filter(p => selectedPlayerIds.includes(p.id))
+                        .map(p => <input key={p.id} hidden type="text" name="players" defaultValue={p.id} />)}
+                    <Button className="mt-8 h-18 text-5xl cursor-pointer" disabled={selectedPlayerIds.length === 0}
                         type="submit"
                         variant="default">
                         Start Game

@@ -2,6 +2,7 @@ import { createId } from "@paralleldrive/cuid2"
 import { GameEvent } from "@prisma/client"
 import { Ring } from "../models/ring";
 import { Checkout } from "../models/checkout";
+import { PlayerWithPositon } from "../models/player";
 
 export type DomainEvent = GameEvent;
 
@@ -48,18 +49,15 @@ export function gameCreatedEvent({ gameId, startpoints, checkout }: { gameId: st
 
 export type PlayerAdded = DomainEvent & {
     type: "PlayerAdded",
-    payload: {
-        playerId: string,
-        name: string
-    }
+    payload: PlayerWithPositon
 }
 
-export function playerAddedEvent({ playerId, name, gameId }: { playerId: string, name: string, gameId: string }): PlayerAdded {
+export function playerAddedEvent({ payload, gameId }: { payload: PlayerAdded["payload"], gameId: string }): PlayerAdded {
     return {
         id: createId(),
         createdAt: new Date(),
         type: "PlayerAdded",
         gameId,
-        payload: { playerId, name },
+        payload
     }
 }

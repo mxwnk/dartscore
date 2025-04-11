@@ -1,7 +1,7 @@
 import { Checkout } from "../models/checkout";
 import { calcScore, Dart } from "../models/dart";
-import { PlayerState } from "../models/player";
-import { Turn } from "../models/turn";
+import { PlayerState, PlayerWithPositon } from "../models/player";
+import { calcScoreOfTurns, findNextPlayer, Turn } from "../models/turn";
 import { sum } from "../utils/number";
 import { DartThrown, DomainEvent, GameCreated, PlayerAdded } from "./events";
 
@@ -17,7 +17,8 @@ export type GameView = {
 };
 
 export type PlayerView = {
-    playerId: string;
+    id: string;
+    position: number;
     name: string;
     remaining: number;
     state: PlayerState;
@@ -31,12 +32,12 @@ export type CurrentTurnView = {
 }
 
 export class GameProjection {
-    private players: { playerId: string, name: string }[] = [];
+    private players: PlayerWithPositon[] = [];
     private turns: Map<string, Turn[]> = new Map();
     private gameId!: string;
     private startpoints!: number;
     private checkout!: Checkout;
-    private currentPlayerId!: string;
+    private currentPlayer!: PlayerWithPositon;
 
     public static from(events: DomainEvent[]) {
         return new GameProjection(events);
@@ -50,8 +51,8 @@ export class GameProjection {
 
     public toView(): GameView {
         const players = this.players.map(p => this.toPlayerView(p));
-        const roundNumber = this.turns.get(this.currentPlayerId)?.length ?? 1;
-        const remaining = players.filter(p => p.playerId === this.currentPlayerId)[0].remaining;
+        const roundNumber = this.turns.get(this.currentPlayer?.id)?.length ?? 1;
+        const remaining = this.currentPlayer ? players.filter(p => p.id === this.currentPlayer.id)[0].remaining : 0;
         return {
             gameId: this.gameId,
             checkout: this.checkout,
@@ -64,8 +65,8 @@ export class GameProjection {
         };
     }
 
-    private toPlayerView(player: { name: string, playerId: string }): PlayerView {
-        const turns = this.turns.get(player.playerId) ?? [];
+    private toPlayerView(player: PlayerWithPositon): PlayerView {
+        const turns = this.turns.get(player.id) ?? [];
         const validTurns = turns.filter(t => !t.overthrown);
         const scoredPoints = validTurns.flatMap(t => t.darts).map(calcScore).reduce(sum, 0);
         const average = validTurns.length ? scoredPoints / validTurns.length : 0;
@@ -78,15 +79,14 @@ export class GameProjection {
             if (currentTurn?.overthrown) {
                 return "overthrown";
             }
-            if (this.currentPlayerId === player.playerId) {
+            if (this.currentPlayer.id === player.id) {
                 return "playing";
             }
             return "waiting";
         }
 
         return {
-            playerId: player.playerId,
-            name: player.name,
+            ...player,
             state: state(),
             remaining,
             average: Math.round(average * 100) / 100,
@@ -108,14 +108,14 @@ export class GameProjection {
             case "PlayerAdded":
                 const playerAdded = event as PlayerAdded;
                 if (this.players.length === 0) {
-                    this.currentPlayerId = playerAdded.payload.playerId;
+                    this.currentPlayer = playerAdded.payload;
                 }
                 this.players.push(playerAdded.payload);
-                this.turns.set(playerAdded.payload.playerId, []);
+                this.turns.set(playerAdded.payload.id, []);
                 break;
             case "DartThrown":
                 const { playerId, score, ring, overthrown } = (event as DartThrown).payload;
-                this.currentPlayerId = playerId;
+                this.currentPlayer = this.players.find(p => p.id === playerId)!;
                 const playerTurns = this.turns.get(playerId)!;
                 if (this.newTurnRequired(playerId)) {
                     playerTurns.push({ darts: [], overthrown: false });
@@ -129,17 +129,12 @@ export class GameProjection {
                 if (!isTurnOver) {
                     return;
                 }
-                const currentPlayerIndex = this.players.findIndex(p => p.playerId === this.currentPlayerId);
-                for (let index = 1; index <= this.players.length + 1; index++) {
-                    const nextPlayerIndex = (currentPlayerIndex + index) % this.players.length;
-                    const nextPlayer = this.players.at(nextPlayerIndex)!;
-                    if (this.hasPlayerWon(nextPlayer.playerId)) {
-                        continue;
-                    }
-                    const nextPlayerTurns = this.turns.get(nextPlayer.playerId)!;
+
+                const nextPlayer = findNextPlayer({ playerTurns: this.turns, startpoints: this.startpoints, players: this.players, currentPlayer: this.currentPlayer });
+                if (nextPlayer) {
+                    this.currentPlayer = nextPlayer;
+                    const nextPlayerTurns = this.turns.get(nextPlayer.id)!;
                     nextPlayerTurns.push(newTurn());
-                    this.currentPlayerId = nextPlayer.playerId;
-                    break;
                 }
                 break;
         }
@@ -154,12 +149,7 @@ export class GameProjection {
         if (!playerTurns || playerTurns.length === 0) {
             return this.startpoints;
         }
-        return this.startpoints - playerTurns
-            .filter(t => !t.overthrown)
-            .map(t => t.darts)
-            .flatMap(x => x)
-            .map(calcScore)
-            .reduce(sum)
+        return this.startpoints - calcScoreOfTurns(playerTurns);
     }
 
     private newTurnRequired(playerId: string) {

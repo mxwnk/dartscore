@@ -1,23 +1,22 @@
-import { createId } from '@paralleldrive/cuid2';
 import { dartThrownEvent, DartThrown, DomainEvent, GameCreated, gameCreatedEvent, PlayerAdded, playerAddedEvent } from "./events";
-import { sum } from '../utils/number';
-import { Turn } from '../models/turn';
+import { calcScoreOfTurns, findNextPlayer, Turn } from '../models/turn';
 import { calcScore, Dart } from '../models/dart';
-import { Player } from '../models/player';
+import { Player, PlayerWithPositon } from '../models/player';
 import { Checkout } from '../models/checkout';
+import { createGameId } from '../models/id';
 
 export class Game {
     private id: string;
     private events: DomainEvent[] = [];
-    private players: { playerId: string, name: string }[] = [];
+    private players: PlayerWithPositon[] = [];
     private startpoints!: number;
     private checkout!: Checkout;
-    private currentPlayerId: string = "";
+    private currentPlayer!: PlayerWithPositon;
     private turns: Map<string, Turn[]> = new Map();
 
     public static start(setup?: { startpoints?: number, checkout?: Checkout }) {
         const gameCreated = gameCreatedEvent({
-            gameId: createId(),
+            gameId: createGameId(),
             startpoints: setup?.startpoints ?? 301,
             checkout: setup?.checkout ?? "Straight"
         });
@@ -44,7 +43,8 @@ export class Game {
 
     public addPlayer(player: Player) {
         const gameId = this.id;
-        const playerAdded = playerAddedEvent({ gameId, playerId: player.id, name: player.name });
+        const position = this.players.length;
+        const playerAdded = playerAddedEvent({ gameId, payload: { id: player.id, name: player.name, position } });
         this.apply(playerAdded);
     }
 
@@ -55,7 +55,7 @@ export class Game {
         const overthrown = this.isWrongCheckout(dart);
         const dartThrown = dartThrownEvent({
             gameId: this.id, payload: {
-                playerId: this.currentPlayerId,
+                playerId: this.currentPlayer.id,
                 overthrown,
                 ...dart
             }
@@ -70,7 +70,7 @@ export class Game {
     }
 
     private isWrongCheckout(dartThrow: Dart) {
-        const missingScore = this.calculateMissingScore(this.currentPlayerId);
+        const missingScore = this.calculateMissingScore(this.currentPlayer.id);
         const currentScore = calcScore(dartThrow);
         const newMissingScore = missingScore - currentScore;
         if (newMissingScore < 0) {
@@ -91,16 +91,11 @@ export class Game {
         if (!playerTurns) {
             return this.startpoints;
         }
-        return this.startpoints - playerTurns
-            .filter(t => !t.overthrown)
-            .map(t => t.darts)
-            .flatMap(x => x)
-            .map(calcScore)
-            .reduce(sum)
+        return this.startpoints - calcScoreOfTurns(playerTurns);
     }
 
     private isGameOver() {
-        return this.players.every(p => this.hasPlayerWon(p.playerId));
+        return this.players.every(p => this.hasPlayerWon(p.id));
     }
 
     private apply(event: DomainEvent) {
@@ -117,7 +112,7 @@ export class Game {
 
     private applyPlayerAdded(event: PlayerAdded) {
         if (this.players.length === 0) {
-            this.currentPlayerId = event.payload.playerId;
+            this.currentPlayer = event.payload;
         }
         this.players.push(event.payload);
     }
@@ -144,15 +139,9 @@ export class Game {
         if (!isTurnOver) {
             return;
         }
-        const currentPlayerIndex = this.players.findIndex(p => p.playerId === this.currentPlayerId);
-        for (let index = 1; index <= this.players.length + 1; index++) {
-            const nextPlayerIndex = (currentPlayerIndex + index) % this.players.length;
-            const nextPlayer = this.players.at(nextPlayerIndex)!;
-            if (this.hasPlayerWon(nextPlayer.playerId)) {
-                continue;
-            }
-            this.currentPlayerId = nextPlayer.playerId;
-            break;
+        const nextPlayer = findNextPlayer({ playerTurns: this.turns, currentPlayer: this.currentPlayer, startpoints: this.startpoints, players: this.players });
+        if (nextPlayer) {
+            this.currentPlayer = nextPlayer;
         }
     }
 }

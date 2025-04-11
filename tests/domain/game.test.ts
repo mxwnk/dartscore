@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { Game } from "@/app/domain/game";
 import { seedPlayer } from '../seeder/player.seed';
-import { Checkout, DartThrown, PlayerAdded } from '@/app/domain/events';
+import { DartThrown, PlayerAdded } from '@/app/domain/events';
+import { Checkout } from '@/app/models/checkout';
 
 describe("Game", () => {
     it("should allow to create a new game", async () => {
@@ -21,7 +22,7 @@ describe("Game", () => {
         const events = game.flush();
         const playerAdded = events[1] as PlayerAdded;
         expect(playerAdded.type).toBe("PlayerAdded");
-        expect(playerAdded.payload.playerId).toBe(player.id);
+        expect(playerAdded.payload.id).toBe(player.id);
         expect(playerAdded.payload.name).toBe(player.name);
     });
 

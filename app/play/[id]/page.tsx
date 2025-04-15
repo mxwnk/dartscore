@@ -4,6 +4,7 @@ import { Game } from "./game";
 import { Navigation } from "@/app/components/app-bar";
 import { ViewSelector } from "./view-selector";
 import { Spectator } from "./spectator";
+import { InviteButton } from "@/app/components/invite-button";
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -15,6 +16,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
     <GameSynchronizer gameId={gameId} version={gameView.version}>
       <Navigation
         title={`Game: ${gameView.players.length} Player - ${gameView.startpoints} Points - ${gameView.checkout} Out`}
+        end={<InviteButton />}
       />
       <ViewSelector
         spectator={<Spectator gameView={gameView} />}

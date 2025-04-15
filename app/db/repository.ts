@@ -4,11 +4,11 @@ import { GameProjection } from "../domain/projection";
 import { PrismaRepository } from "./prisma.repository";
 
 export type IRepository = {
-    save(game: Game): Promise<void>;
-    load(gameId: string): Promise<Game>;
-    getProjection(gameId: string): Promise<GameProjection>;
-    undo(gameId: string): Promise<void>;
-    getEvents(gameId: string): Promise<DomainEvent[]>
-}
+  save(game: Game): Promise<{ version: number }>;
+  load(gameId: string): Promise<Game>;
+  getProjection(gameId: string): Promise<GameProjection>;
+  undo(gameId: string): Promise<void>;
+  getEvents(gameId: string): Promise<DomainEvent[]>;
+};
 
 export const repository = PrismaRepository.instance();

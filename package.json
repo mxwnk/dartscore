@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "nodemon",
+    "prod": "export NODE_ENV=production && ts-node server.ts",
     "build": "next build",
+    "server": "tsc --project tsconfig.server.json",
     "prebuild": "prisma generate",
     "start": "next start",
     "lint": "next lint",
@@ -28,18 +30,20 @@
     "@radix-ui/react-slot": "^1.1.2",
     "@shadcn/ui": "^0.0.4",
     "@tailwindcss/postcss": "^4.0.14",
+    "@types/ws": "^8.18.1",
     "@vercel/speed-insights": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "env-cmd": "^10.1.0",
     "lucide-react": "^0.482.0",
-    "next": "15.2.2",
+    "next": "15.3.0",
     "postcss": "^8.5.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "tailwind-merge": "^3.0.2",
     "tailwindcss": "^4.0.14",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "ws": "^8.18.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
@@ -47,9 +51,11 @@
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.4",
     "eslint": "^9",
-    "eslint-config-next": "15.2.2",
+    "nodemon": "^3.1.9",
+    "eslint-config-next": "15.3.0",
     "prisma": "6.5.0",
     "typescript": "^5.8.2",
+    "ts-node": "^10.9.2",
     "vitest": "^3.0.9"
   }
 }

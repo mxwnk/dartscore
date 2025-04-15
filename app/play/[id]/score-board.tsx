@@ -1,11 +1,10 @@
-'use client';
+"use client";
 import { useState } from "react";
 import { useGlobalKeydown } from "../../hooks/global-keydown";
 import { caseInsensitiveEquals } from "../../utils/string";
-import { submitDart } from "@/app/play/[id]/submit-dart";
-import { undoLastThrow } from "./undo";
 import { Ring } from "@/app/models/ring";
 import { Button } from "@/components/ui/button";
+import { submitDart } from "./submit-dart";
 
 const scores = [...Array.from(Array(21).keys()), 25];
 
@@ -17,13 +16,13 @@ export function Scoreboard(props: ScoreboardProps) {
   const [ring, setRing] = useState<Ring | undefined>(undefined);
   const [disabled, setDisabled] = useState(false);
   const toggleRing = (ring: Ring) => {
-    setRing(prev => {
+    setRing((prev) => {
       if (prev === ring) {
         return undefined;
       }
       return ring;
     });
-  }
+  };
 
   useGlobalKeydown((e) => {
     const key = e.key.toUpperCase();
@@ -51,36 +50,48 @@ export function Scoreboard(props: ScoreboardProps) {
   return (
     <>
       <div className="mb-4 grid gap-1 grid-cols-6">
-        {scores.map(s => (
-          <Button onClick={() => {
-            navigator.vibrate(100);
-            onSumit(s);
-          }}
+        {scores.map((s) => (
+          <Button
+            onClick={() => {
+              navigator.vibrate(100);
+              onSumit(s);
+            }}
             key={s}
             className="py-8 w-[100%] text-2xl cursor-pointer"
             disabled={s === 25 && ring === "T"}
-            variant="secondary">
+            variant="secondary"
+          >
             {s}
           </Button>
         ))}
       </div>
       <div className="mt-4 grid grid-cols-3 gap-1">
-        <Button className="w-[100%] h-18 py-4 text-4xl cursor-pointer" onClick={() => toggleRing("D")} color="info"
-          variant={ring === "D" ? 'default' : 'secondary'}
+        <Button
+          className="w-[100%] h-18 py-4 text-4xl cursor-pointer"
+          onClick={() => toggleRing("D")}
+          color="info"
+          variant={ring === "D" ? "default" : "secondary"}
         >
           Double
         </Button>
-        <Button className="w-[100%] h-18 py-4 text-4xl cursor-pointer" onClick={() => toggleRing("T")} color="info"
-          variant={ring === "T" ? 'default' : 'secondary'}>
+        <Button
+          className="w-[100%] h-18 py-4 text-4xl cursor-pointer"
+          onClick={() => toggleRing("T")}
+          color="info"
+          variant={ring === "T" ? "default" : "secondary"}
+        >
           Triple
         </Button>
         <Button
           className="w-[100%] bg-red-400 h-18 py-4 text-4xl cursor-pointer"
-          onClick={() => { navigator.vibrate(100); undoLastThrow(props.gameId); }}
-          variant="destructive">
+          onClick={() => {
+            navigator.vibrate(100);
+          }}
+          variant="destructive"
+        >
           Undo
         </Button>
       </div>
     </>
-  )
+  );
 }

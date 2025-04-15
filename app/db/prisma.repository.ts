@@ -1,12 +1,12 @@
-import { IRepository } from "./repository";
+import { Repository } from "./repository";
 import prisma from "@/lib/prisma";
 import { Game } from "../domain/game";
 import { GameEvent, Prisma } from "@prisma/client";
 import { GameProjection } from "../domain/projection";
 import { DomainEvent } from "../domain/events";
 
-export class PrismaRepository implements IRepository {
-  public static instance(): IRepository {
+export class PrismaRepository implements Repository {
+  public static instance(): Repository {
     return new PrismaRepository();
   }
 
@@ -22,10 +22,7 @@ export class PrismaRepository implements IRepository {
         payload: e.payload as Prisma.InputJsonValue,
       })),
     });
-    const version = await prisma.gameEvent.count({
-      where: { gameId: game.getId() },
-    });
-    return { version };
+    return await this.getCurrentVersion(game.getId());
   }
 
   public async load(gameId: string): Promise<Game> {
@@ -42,15 +39,16 @@ export class PrismaRepository implements IRepository {
     return GameProjection.from(events);
   }
 
-  public async undo(gameId: string): Promise<void> {
+  public async undo(gameId: string): Promise<{ version: number }> {
     const lastEvent = await prisma.gameEvent.findFirst({
       where: { gameId },
       orderBy: { createdAt: "desc" },
     });
     if (!lastEvent) {
-      return;
+      return { version: 0 };
     }
     await prisma.gameEvent.delete({ where: { id: lastEvent.id } });
+    return await this.getCurrentVersion(gameId);
   }
 
   public async getEvents(gameId: string): Promise<DomainEvent[]> {
@@ -63,5 +61,14 @@ export class PrismaRepository implements IRepository {
       type: row.type,
     }));
     return events;
+  }
+
+  private async getCurrentVersion(
+    gameId: string,
+  ): Promise<{ version: number }> {
+    const version = await prisma.gameEvent.count({
+      where: { gameId },
+    });
+    return { version };
   }
 }

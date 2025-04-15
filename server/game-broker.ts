@@ -1,5 +1,4 @@
 import { GameUpdate } from "@/app/models/messages";
-import { createId } from "@paralleldrive/cuid2";
 import { WebSocketServer } from "ws";
 import { WebSocket } from "ws";
 
@@ -13,8 +12,6 @@ export function initGameBroker(websocketServer: WebSocketServer) {
 }
 
 class GameBroker {
-  public id = createId();
-
   private gamesToSockets = new Map<string, WebSocket[]>();
 
   constructor(private websocketServer: WebSocketServer) {
@@ -55,7 +52,6 @@ class GameBroker {
   }
 
   private init() {
-    console.log("Init GameBroker");
     this.websocketServer.addListener("connection", (socket) => {
       socket.on("message", (msg) => {
         const data = JSON.parse(msg.toString("utf8"));

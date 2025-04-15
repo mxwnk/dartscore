@@ -6,7 +6,7 @@
     "dev": "nodemon",
     "prod": "export NODE_ENV=production && ts-node server.ts",
     "build": "next build",
-    "server": "tsc --project tsconfig.server.json",
+    "build:server": "tsc --project tsconfig.server.json",
     "prebuild": "prisma generate",
     "start": "next start",
     "lint": "next lint",

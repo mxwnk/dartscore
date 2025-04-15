@@ -5,6 +5,7 @@ import { caseInsensitiveEquals } from "../../utils/string";
 import { Ring } from "@/app/models/ring";
 import { Button } from "@/components/ui/button";
 import { submitDart } from "./submit-dart";
+import { undoLastThrow } from "./undo";
 
 const scores = [...Array.from(Array(21).keys()), 25];
 
@@ -85,6 +86,7 @@ export function Scoreboard(props: ScoreboardProps) {
         <Button
           className="w-[100%] bg-red-400 h-18 py-4 text-4xl cursor-pointer"
           onClick={() => {
+            undoLastThrow(props.gameId);
             navigator.vibrate(100);
           }}
           variant="destructive"

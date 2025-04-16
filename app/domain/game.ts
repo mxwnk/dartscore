@@ -88,9 +88,13 @@ export class Game {
     if (newMissingScore < 0) {
       return true;
     }
+    if (this.checkout == "Double" && newMissingScore === 1) {
+      return true;
+    }
     if (
       this.checkout == "Double" &&
-      (newMissingScore === 1 || newMissingScore === 0)
+      dartThrow.ring !== "D" &&
+      newMissingScore === 0
     ) {
       return true;
     }

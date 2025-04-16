@@ -5,7 +5,7 @@ import { DartThrown, PlayerAdded } from "@/app/domain/events";
 import { Checkout } from "@/app/models/checkout";
 
 describe("Game", () => {
-  it("should allow to create a new game", async () => {
+  it("🎮 should allow to create a new game", async () => {
     const game = Game.start();
 
     const events = game.flush();
@@ -13,7 +13,7 @@ describe("Game", () => {
     expect((events[0].type = "GameCreated"));
   });
 
-  it("should allow to add player", async () => {
+  it("🙋‍♀️ should allow to add player", async () => {
     const game = Game.start();
     const player = seedPlayer();
 
@@ -26,7 +26,7 @@ describe("Game", () => {
     expect(playerAdded.payload.name).toBe(player.name);
   });
 
-  it("should allow to add multiple players", async () => {
+  it("🙋‍♂️ should allow to add multiple players", async () => {
     const game = Game.start();
     const first = seedPlayer();
     const second = seedPlayer();
@@ -41,7 +41,7 @@ describe("Game", () => {
   });
 
   describe("Darts", () => {
-    it("should track thrown darts", async () => {
+    it("🎯 should track thrown darts", async () => {
       const game = seedGame();
 
       game.throwDart({ score: 1, ring: "D" });
@@ -54,19 +54,7 @@ describe("Game", () => {
       expect(dartThrownEvent.payload.ring).toBe("D");
     });
 
-    it("should mark throw as overthrown if score < 0", async () => {
-      const game = seedGame({ startpoints: 2 });
-
-      game.throwDart({ score: 3, ring: "D" });
-
-      const events = game.flush();
-      expect(events.length).toBe(1);
-      var dartThrownEvent = events[0] as DartThrown;
-      expect(dartThrownEvent.type).toBe("DartThrown");
-      expect(dartThrownEvent.payload.overthrown).toBe(true);
-    });
-
-    it("should mark throw as legal if missing score > 0", async () => {
+    it("✅ should mark throw as legal if missing score > 0", async () => {
       const game = seedGame({ startpoints: 2 });
 
       game.throwDart({ score: 1 });
@@ -78,7 +66,29 @@ describe("Game", () => {
       expect(dartThrownEvent.payload.overthrown).toBe(false);
     });
 
-    it("should mark throw as overthrown if double checkout busted", async () => {
+    it("✅ should mark throw as legal if double out checked ", async () => {
+      const game = seedGame({ startpoints: 2, checkout: "Double" });
+
+      game.throwDart({ score: 1, ring: "D" });
+
+      const events = game.flush();
+      var dartThrownEvent = events[0] as DartThrown;
+      expect(dartThrownEvent.payload.overthrown).toBe(false);
+    });
+
+    it("❌ should mark throw as overthrown if score < 0", async () => {
+      const game = seedGame({ startpoints: 2 });
+
+      game.throwDart({ score: 3, ring: "D" });
+
+      const events = game.flush();
+      expect(events.length).toBe(1);
+      var dartThrownEvent = events[0] as DartThrown;
+      expect(dartThrownEvent.type).toBe("DartThrown");
+      expect(dartThrownEvent.payload.overthrown).toBe(true);
+    });
+
+    it("❌ should mark throw as overthrown if double checkout busted", async () => {
       const game = seedGame({ startpoints: 2, checkout: "Double" });
 
       game.throwDart({ score: 1, ring: undefined });
@@ -88,7 +98,7 @@ describe("Game", () => {
       expect(dartThrownEvent.payload.overthrown).toBe(true);
     });
 
-    it("should mark throw as overthrown if double out missed", async () => {
+    it("❌ should mark throw as overthrown if double out missed", async () => {
       const game = seedGame({ startpoints: 2, checkout: "Double" });
 
       game.throwDart({ score: 2, ring: undefined });

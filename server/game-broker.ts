@@ -59,6 +59,10 @@ class GameBroker {
           this.join(data.gameId, socket);
         }
       });
+
+      socket.on("close", () => {
+        this.leave(socket);
+      });
     });
   }
 }

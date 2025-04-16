@@ -21,6 +21,7 @@ export function createWebsocketServer({
   wss.on("connection", (client) => {
     client.on("error", console.error);
   });
+  console.log(`WebsocketServer is running on ${dev} ${config.port}`);
   return wss;
 }
 

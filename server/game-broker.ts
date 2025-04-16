@@ -12,14 +12,14 @@ export function initGameBroker(websocketServer: WebSocketServer) {
 }
 
 class GameBroker {
-  private gamesToSockets = new Map<string, WebSocket[]>();
+  private gameToSockets = new Map<string, WebSocket[]>();
 
   constructor(private websocketServer: WebSocketServer) {
     this.init();
   }
 
   public broadcastUpdate(gameId: string, version: number) {
-    const sockets = this.gamesToSockets.get(gameId) ?? [];
+    const sockets = this.gameToSockets.get(gameId) ?? [];
     for (const socket of sockets) {
       if (!socket.OPEN) {
         return;
@@ -30,23 +30,23 @@ class GameBroker {
   }
 
   private join(gameId: string, socket: WebSocket): void {
-    const sockets = this.gamesToSockets.get(gameId);
+    const sockets = this.gameToSockets.get(gameId);
     if (sockets) {
       sockets.push(socket);
     } else {
-      this.gamesToSockets.set(gameId, [socket]);
+      this.gameToSockets.set(gameId, [socket]);
     }
   }
 
   private leave(socket: WebSocket) {
-    const gameKeys = this.gamesToSockets.keys();
+    const gameKeys = this.gameToSockets.keys();
     for (const key of gameKeys) {
-      const sockets = this.gamesToSockets.get(key)!;
+      const sockets = this.gameToSockets.get(key)!;
       const updated = sockets.filter((s) => s === socket);
       if (updated.length === 0) {
-        this.gamesToSockets.delete(key);
+        this.gameToSockets.delete(key);
       } else {
-        this.gamesToSockets.set(key, updated);
+        this.gameToSockets.set(key, updated);
       }
     }
   }

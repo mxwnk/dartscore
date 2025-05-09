@@ -7,7 +7,7 @@
     "prod": "export NODE_ENV=production && ts-node server.ts",
     "build": "next build",
     "build:server": "tsc --project tsconfig.server.json",
-    "prebuild": "prisma generate",
+    "prebuild": "prisma generate && ./scripts/update-version.sh",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",
@@ -17,7 +17,8 @@
     "db:migrate": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "docker:start": "node server.js",
-    "predocker:start": "node ./node_modules/prisma/build/index.js migrate deploy"
+    "predocker:start": "node ./node_modules/prisma/build/index.js migrate deploy",
+    "version": "./scripts/update-version.sh"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",

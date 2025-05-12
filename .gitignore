@@ -36,4 +36,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 ./lib/version.ts
-./prisma/app/*
+/prisma/app/**
+.zed

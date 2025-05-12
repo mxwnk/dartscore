@@ -1,9 +1,9 @@
 import { Repository } from "./repository";
 import prisma from "@/lib/prisma";
 import { Game } from "../domain/game";
-import { GameEvent, Prisma } from "@prisma/client";
 import { GameProjection } from "../domain/projection";
 import { DomainEvent } from "../domain/events";
+import { GameEvent, Prisma } from "@/prisma/app/generated/prisma/client";
 
 export class PrismaRepository implements Repository {
   public static instance(): Repository {

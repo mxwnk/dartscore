@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@/prisma/app/generated/prisma/client";
 
 let prisma: PrismaClient;
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   prisma = new PrismaClient();
 } else {
   if (!global.prisma) {

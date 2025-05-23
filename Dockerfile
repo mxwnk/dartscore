@@ -29,6 +29,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/dist ./
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/update-version.sh ./scripts/update-version.sh
 
 # Dependencies
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma/

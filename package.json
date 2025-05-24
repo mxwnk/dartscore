@@ -7,7 +7,7 @@
     "prod": "export NODE_ENV=production && ts-node server.ts",
     "build": "next build",
     "build:server": "tsc --project tsconfig.server.json",
-    "prebuild": "prisma generate && ./scripts/update-version.sh",
+    "prebuild": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",

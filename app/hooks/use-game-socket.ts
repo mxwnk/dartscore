@@ -45,7 +45,7 @@ export function useGameSocket({
       socket.removeEventListener("error", handleError);
       socket.removeEventListener("close", handleClose);
     };
-  }, [socket, onVersionUpdate]);
+  }, [socket, onVersionUpdate, gameId]);
 }
 
 const getBaseUrl = () => {

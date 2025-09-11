@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import qrcode from "qrcode";
 import { useEffect, useState } from "react";
 
@@ -7,10 +8,10 @@ export function QrCode({ text }: { text: string }) {
 
   useEffect(() => {
     qrcode.toDataURL(text).then(setDataUrl);
-  }, []);
+  }, [text]);
 
   if (!dataUrl) {
     return <></>;
   }
-  return <img className="h-full w-full" src={dataUrl} />;
+  return <Image className="h-full w-full" src={dataUrl} alt="QR Code" />;
 }

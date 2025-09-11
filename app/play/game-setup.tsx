@@ -2,7 +2,7 @@
 import { startGame } from "./start-game";
 import { AddPlayerDialog } from "./add-player";
 import { PlayerWithName } from "./page";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, User, Plus, MoveVertical } from "lucide-react";
 import { Checkout } from "../models/checkout";
@@ -17,6 +17,10 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
   const [showAddPlayerDialog, setShowAddPlayerDialog] = useState(false);
   const [startpoints, setStartpoints] = useState<number>(301);
   const [checkout, setCheckout] = useState<Checkout>("Straight");
+
+  useEffect(() => {
+    setPlayers(playerList);
+  }, [playerList]);
 
   function togglePlayer(player: PlayerWithName) {
     if (selectedPlayerIds.some((id) => id === player.id)) {

@@ -13,7 +13,7 @@ export function useWebSocket(url: string) {
         update((p) => p + 1);
 
         return () => socket.close();
-    }, []);
+    }, [url]);
 
     return ref.current;
 }

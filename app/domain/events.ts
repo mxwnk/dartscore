@@ -4,7 +4,11 @@ import { Checkout } from "../models/checkout";
 import { PlayerWithPositon } from "../models/player";
 import { GameEvent } from "@/prisma/app/generated/prisma/client";
 
-export type DomainEvent = GameEvent;
+type EventType = "DartThrown" | "GameCreated" | "PlayerAdded";
+
+export type DomainEvent = Omit<GameEvent, "type"> & {
+  type: EventType;
+};
 
 export type DartThrown = DomainEvent & {
   type: "DartThrown";

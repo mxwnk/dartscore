@@ -12,6 +12,7 @@ import { calcScore, Dart } from "../models/dart";
 import { Player, PlayerWithPositon } from "../models/player";
 import { Checkout } from "../models/checkout";
 import { createGameId } from "../models/id";
+import { GameEvent } from "@/prisma/app/generated/prisma/client";
 
 export class Game {
   private id: string;
@@ -118,8 +119,20 @@ export class Game {
   }
 
   private apply(event: DomainEvent) {
-    /** @ts-ignore */
-    this[`apply${event.type}`](event);
+    switch (event.type) {
+      case "GameCreated":
+        this.applyGameCreated(event as GameCreated);
+        break;
+      case "PlayerAdded":
+        this.applyPlayerAdded(event as PlayerAdded);
+        break;
+      case "DartThrown":
+        this.applyDartThrown(event as DartThrown);
+        break;
+      default:
+        const exhaustiveCheck: never = event.type;
+        throw new Error(`Unhandled color case: ${exhaustiveCheck}`);
+    }
     this.events.push(event);
   }
 

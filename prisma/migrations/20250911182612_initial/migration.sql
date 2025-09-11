@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "EventType" AS ENUM ('GameCreated', 'PlayerAdded', 'DartThrown');
+
 -- CreateTable
 CREATE TABLE "Player" (
     "id" TEXT NOT NULL,
@@ -11,7 +14,7 @@ CREATE TABLE "Player" (
 CREATE TABLE "GameEvent" (
     "id" TEXT NOT NULL,
     "gameId" TEXT NOT NULL,
-    "type" TEXT NOT NULL,
+    "type" "EventType" NOT NULL,
     "payload" JSONB NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

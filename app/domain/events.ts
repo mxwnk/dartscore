@@ -2,13 +2,9 @@ import { createId } from "@paralleldrive/cuid2";
 import { Ring } from "../models/ring";
 import { Checkout } from "../models/checkout";
 import { PlayerWithPositon } from "../models/player";
-import { GameEvent } from "@/prisma/app/generated/prisma/client";
+import { GameEvent, $Enums} from "@/prisma/app/generated/prisma/client";
 
-type EventType = "DartThrown" | "GameCreated" | "PlayerAdded";
-
-export type DomainEvent = Omit<GameEvent, "type"> & {
-  type: EventType;
-};
+export type DomainEvent = GameEvent;
 
 export type DartThrown = DomainEvent & {
   type: "DartThrown";

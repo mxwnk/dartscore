@@ -19,8 +19,14 @@ model Player {
 model GameEvent {
   id      String @id @default(cuid())
   gameId  String
-  type    String
+  type    EventType
   payload Json
 
   createdAt DateTime @default(now()) @map(name: "created_at")
+}
+
+enum EventType {
+  GameCreated
+  PlayerAdded
+  DartThrown
 }

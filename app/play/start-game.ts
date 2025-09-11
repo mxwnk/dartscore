@@ -1,6 +1,5 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Game } from "../domain/game";
 import { Checkout } from "../models/checkout";
@@ -20,6 +19,5 @@ export async function startGame(formData: FormData) {
   const game = Game.start({ checkout, startpoints });
   orderedPlayers.forEach((p) => game.addPlayer(p));
   await repository.save(game);
-  // revalidatePath('/setup');
   redirect(`/play/${game.getId()}`);
 }

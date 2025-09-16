@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { Game } from "@/app/domain/game";
 import { seedPlayer } from "../seeder/player.seed";
 import { DartThrown, PlayerAdded, TurnStarted } from "@/app/domain/events";
-import { Checkout } from "@/app/models/checkout";
 import { randomDart } from "../seeder/dart.seed";
+import { seedDefaultGame, startGame } from "../seeder/game.seed";
 
 describe("Game", () => {
   it("🎮 should allow to create a new game", async () => {
@@ -125,20 +125,3 @@ describe("Game", () => {
     });
   });
 });
-
-const seedDefaultGame = () => startGame({ startpoints: 501, checkout: "Double", playerCount: 2 });
-
-function startGame(config?: { startpoints?: number; checkout?: Checkout; playerCount?: number }) {
-  const game = Game.create({
-    startpoints: config?.startpoints,
-    checkout: config?.checkout,
-  });
-  const playerCount = config?.playerCount ?? 1;
-  for (let i = 0; i < playerCount; i++) {
-    const player = seedPlayer();
-    game.addPlayer(player);
-  }
-  game.start();
-  game.flush();
-  return game;
-}

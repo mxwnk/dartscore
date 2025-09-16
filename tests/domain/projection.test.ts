@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { GameProjection } from '@/app/domain/projection';
-import { dartThrownEvent, gameCreatedEvent, playerAddedEvent } from '@/app/domain/events';
+import { dartThrownEvent, gameCreatedEvent, gameStartedEvent, playerAddedEvent, turnStartedEvent } from '@/app/domain/events';
+import { startGame } from '../seeder/game.seed';
 
 describe("Game Projection", () => {
     const gameId = "42";
@@ -20,7 +21,9 @@ describe("Game Projection", () => {
         const events = [
             gameCreatedEvent({ gameId, startpoints, checkout }),
             playerAddedEvent({ payload: { name: "Homer", id: "1", position: 0 }, gameId }),
-            playerAddedEvent({ payload: { name: "Bart", id: "1", position: 1 }, gameId })
+            playerAddedEvent({ payload: { name: "Bart", id: "1", position: 1 }, gameId }),
+            gameStartedEvent({ gameId }),
+            turnStartedEvent({ gameId, createdBy: "system", payload: { playerId: "1" } }),
         ];
         const projection = GameProjection.from(events)
 
@@ -35,6 +38,7 @@ describe("Game Projection", () => {
             dartThrownEvent({ gameId, payload: { score: 1, playerId: "1", overthrown: false, ring: undefined } }),
             dartThrownEvent({ gameId, payload: { score: 1, playerId: "1", overthrown: false, ring: "D" } }),
             dartThrownEvent({ gameId, payload: { score: 1, playerId: "1", overthrown: false, ring: "T" } }),
+            turnStartedEvent({ gameId, createdBy: "system", payload: { playerId: "2" } }),
         ];
         const projection = GameProjection.from(events)
 
@@ -57,6 +61,7 @@ describe("Game Projection", () => {
             dartThrownEvent({ gameId, payload: { score: 1, playerId: "1", overthrown: false, ring: undefined } }),
             dartThrownEvent({ gameId, payload: { score: 1, playerId: "1", overthrown: false, ring: "D" } }),
             dartThrownEvent({ gameId, payload: { score: 1, playerId: "1", overthrown: false, ring: "T" } }),
+            turnStartedEvent({ gameId, createdBy: "system", payload: { playerId: "2" } }),
         ];
         const projection = GameProjection.from(events)
 
@@ -70,6 +75,7 @@ describe("Game Projection", () => {
         const events = [
             gameCreatedEvent({ gameId, startpoints: 1, checkout }),
             playerAddedEvent({ payload: { name: "Homer", id: "1", position: 0 }, gameId }),
+            turnStartedEvent({ gameId, createdBy: "system", payload: { playerId: "1" } }),
             dartThrownEvent({ gameId, payload: { score: 1, playerId: "1", overthrown: false, ring: undefined } }),
         ];
         const projection = GameProjection.from(events)
@@ -83,7 +89,9 @@ describe("Game Projection", () => {
         return [
             gameCreatedEvent({ gameId, startpoints, checkout }),
             playerAddedEvent({ payload: { name: "Homer", id: "1", position: 0 }, gameId }),
-            playerAddedEvent({ payload: { name: "Bart", id: "2", position: 1 }, gameId })
+            playerAddedEvent({ payload: { name: "Bart", id: "2", position: 1 }, gameId }),
+            gameStartedEvent({ gameId }),
+            turnStartedEvent({ gameId, createdBy: "system", payload: { playerId: "1" } }),
         ];
     }
 });

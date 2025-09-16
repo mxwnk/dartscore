@@ -25,7 +25,6 @@ export type PlayerView = {
   state: PlayerState;
   average: number;
   currentTurn?: CurrentTurnView;
-  hasWon: boolean;
 };
 
 export type CurrentTurnView = {
@@ -122,9 +121,6 @@ export class GameProjection {
         break;
       case "PlayerAdded":
         const playerAdded = event as PlayerAdded;
-        if (this.players.length === 0) {
-          this.currentPlayer = playerAdded.payload;
-        }
         this.players.push(playerAdded.payload);
         this.turns.set(playerAdded.payload.id, []);
         break;
@@ -136,8 +132,7 @@ export class GameProjection {
       case "GameStarted":
         break;
       case "DartThrown":
-        const { playerId, score, ring, overthrown } = (event as DartThrown)
-          .payload;
+        const { playerId, score, ring, overthrown } = (event as DartThrown).payload;
         this.currentPlayer = this.players.find((p) => p.id === playerId)!;
 
         const currentTurn = this.turns.get(this.currentPlayer.id)!.at(-1)!;
@@ -145,23 +140,6 @@ export class GameProjection {
         currentTurn.overthrown = overthrown;
         break;
     }
-  }
-
-  private calculateMissingScore(playerId: string) {
-    const playerTurns = this.turns.get(playerId);
-    if (!playerTurns || playerTurns.length === 0) {
-      return this.startpoints;
-    }
-    return this.startpoints - calcScoreOfTurns(playerTurns);
-  }
-
-  private newTurnRequired(playerId: string) {
-    const playerTurns = this.turns.get(playerId)!;
-    if (playerTurns.length === 0) {
-      return true;
-    }
-    const lastTurn = playerTurns.at(-1)!;
-    return lastTurn.overthrown || lastTurn.darts.filter(Boolean).length >= 3;
   }
 }
 

@@ -23,7 +23,6 @@ export class Game {
   private id: string;
   private events: DomainEvent[] = [];
   private players: PlayerWithPositon[] = [];
-  private gameStarted: boolean = false;
   private startpoints!: number;
   private checkout!: Checkout;
   private currentPlayer!: PlayerWithPositon;

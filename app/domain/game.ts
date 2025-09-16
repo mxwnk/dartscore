@@ -27,6 +27,7 @@ export class Game {
   private checkout!: Checkout;
   private currentPlayer!: PlayerWithPositon;
   private turns: Map<string, Turn[]> = new Map();
+  private gameStarted: boolean = false;
 
   public static create(setup?: { startpoints?: number; checkout?: Checkout }) {
     const gameCreated = gameCreatedEvent({
@@ -68,6 +69,9 @@ export class Game {
   }
 
   public addPlayer(player: Player) {
+    if (this.gameStarted) {
+      throw new Error("Game already started");
+    }
     const gameId = this.id;
     const position = this.players.length;
     const playerAdded = playerAddedEvent({

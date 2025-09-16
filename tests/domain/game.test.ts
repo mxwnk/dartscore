@@ -40,6 +40,14 @@ describe("Game", () => {
     expect(playerAddedEvents.length).toBe(2);
     playerAddedEvents.every((e) => expect(e.type).toBe("PlayerAdded"));
   });
+  
+  it("🙋‍♂️ should prevent adding player after game started", async () => {
+    const game = startGame();
+
+    const action = () => game.addPlayer(seedPlayer());
+
+    expect(action).toThrow("Game already started");
+  });
 
   describe("Darts", () => {
     it("🎯 should track thrown darts", async () => {

@@ -15,12 +15,12 @@ model Player {
   createdAt DateTime @default(now()) @map(name: "created_at")
 }
 
-
 model GameEvent {
-  id      String @id @default(cuid())
-  gameId  String
-  type    EventType
-  payload Json
+  id        String    @id // we need to know the id before we save the event for createdBy reference
+  createdBy String?   @map(name: "created_by")
+  gameId    String
+  payload   Json
+  type      EventType
 
   createdAt DateTime @default(now()) @map(name: "created_at")
 }
@@ -28,5 +28,10 @@ model GameEvent {
 enum EventType {
   GameCreated
   PlayerAdded
+  GameStarted
+
+  TurnStarted
   DartThrown
+
+  PlayerWon
 }

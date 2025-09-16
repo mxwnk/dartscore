@@ -16,8 +16,9 @@ export async function startGame(formData: FormData) {
   });
   const playerMap = new Map(players.map((p) => [p.id, p]));
   const orderedPlayers = playerIds.map((id) => playerMap.get(id)!);
-  const game = Game.start({ checkout, startpoints });
+  const game = Game.create({ checkout, startpoints });
   orderedPlayers.forEach((p) => game.addPlayer(p));
+  game.start();
   await repository.save(game);
   redirect(`/play/${game.getId()}`);
 }

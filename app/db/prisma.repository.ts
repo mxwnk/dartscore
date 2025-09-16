@@ -17,7 +17,9 @@ export class PrismaRepository implements Repository {
 
     await prisma.gameEvent.createMany({
       data: events.map((e) => ({
+        id: e.id,
         gameId: e.gameId,
+        createdBy: e.createdBy,
         type: e.type,
         payload: e.payload as Prisma.InputJsonValue,
       })),
@@ -41,12 +43,13 @@ export class PrismaRepository implements Repository {
 
   public async undo(gameId: string): Promise<{ version: number }> {
     const lastEvent = await prisma.gameEvent.findFirst({
-      where: { gameId },
+      where: { gameId, createdBy: null },
       orderBy: { createdAt: "desc" },
     });
     if (!lastEvent) {
       return { version: 0 };
     }
+    await prisma.gameEvent.deleteMany({ where: { createdBy: lastEvent.id } });
     await prisma.gameEvent.delete({ where: { id: lastEvent.id } });
     return await this.getCurrentVersion(gameId);
   }
@@ -59,6 +62,7 @@ export class PrismaRepository implements Repository {
       gameId: row.gameId,
       payload: row.payload,
       type: row.type,
+      createdBy: row.createdBy,
     }));
     return events;
   }

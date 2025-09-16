@@ -3,7 +3,7 @@ import { calcScore, Dart } from "../models/dart";
 import { PlayerState, PlayerWithPositon } from "../models/player";
 import { calcScoreOfTurns, findNextPlayer, Turn } from "../models/turn";
 import { sum } from "../utils/number";
-import { DartThrown, DomainEvent, GameCreated, PlayerAdded } from "./events";
+import { DartThrown, DomainEvent, GameCreated, PlayerAdded, PlayerWon, TurnStarted } from "./events";
 
 export type GameView = {
   gameId: string;
@@ -25,6 +25,7 @@ export type PlayerView = {
   state: PlayerState;
   average: number;
   currentTurn?: CurrentTurnView;
+  hasWon: boolean;
 };
 
 export type CurrentTurnView = {
@@ -127,44 +128,23 @@ export class GameProjection {
         this.players.push(playerAdded.payload);
         this.turns.set(playerAdded.payload.id, []);
         break;
+      case "TurnStarted":
+        const turnStarted = event as TurnStarted;
+        this.currentPlayer = this.players.find((p) => p.id === turnStarted.payload.playerId)!;
+        this.turns.set(turnStarted.payload.playerId, [{ darts: [], overthrown: false }]);
+        break;
+      case "GameStarted":
+        break;
       case "DartThrown":
         const { playerId, score, ring, overthrown } = (event as DartThrown)
           .payload;
         this.currentPlayer = this.players.find((p) => p.id === playerId)!;
-        const playerTurns = this.turns.get(playerId)!;
-        if (this.newTurnRequired(playerId)) {
-          playerTurns.push({ darts: [], overthrown: false });
-        }
 
-        const currentTurn = playerTurns.at(-1)!;
+        const currentTurn = this.turns.get(this.currentPlayer.id)!.at(-1)!;
         currentTurn.darts.push({ score, ring });
         currentTurn.overthrown = overthrown;
-
-        const isTurnOver =
-          currentTurn.darts.length === 3 ||
-          currentTurn.overthrown ||
-          this.hasPlayerWon(playerId);
-        if (!isTurnOver) {
-          return;
-        }
-
-        const nextPlayer = findNextPlayer({
-          playerTurns: this.turns,
-          startpoints: this.startpoints,
-          players: this.players,
-          currentPlayer: this.currentPlayer,
-        });
-        if (nextPlayer) {
-          this.currentPlayer = nextPlayer;
-          const nextPlayerTurns = this.turns.get(nextPlayer.id)!;
-          nextPlayerTurns.push(newTurn());
-        }
         break;
     }
-  }
-
-  private hasPlayerWon(playerId: string) {
-    return this.calculateMissingScore(playerId) === 0;
   }
 
   private calculateMissingScore(playerId: string) {
@@ -185,6 +165,3 @@ export class GameProjection {
   }
 }
 
-function newTurn(): Turn {
-  return { darts: [], overthrown: false };
-}

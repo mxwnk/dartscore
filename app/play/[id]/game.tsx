@@ -2,7 +2,6 @@ import { GameView } from "@/app/domain/projection";
 import { PlayerRow } from "./player-row";
 import { RoundBanner } from "./round-banner";
 import { Scoreboard } from "./score-board";
-import { DevConsole } from "@/app/components/dev-console";
 
 type GameProps = {
   gameId: string;
@@ -29,7 +28,6 @@ export function Game({ gameId, gameView }: GameProps) {
         round={gameView.round.number}
       />
       <Scoreboard gameId={gameId} />
-      <DevConsole gameId={gameId} />
     </>
   );
 }

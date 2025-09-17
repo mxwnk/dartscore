@@ -136,8 +136,7 @@ export class Game {
       this.apply(playerWon);
     }
 
-    const isTurnOver = currentTurn.darts.length === 3 || currentTurn.overthrown || hasPlayerWon;
-    return isTurnOver;
+    return currentTurn.darts.length === 3 || currentTurn.overthrown || hasPlayerWon;
   }
 
   private handleDartThrow(dart: Dart) {
@@ -236,11 +235,12 @@ export class Game {
       this.currentPlayer = event.payload;
     }
     this.players.push(event.payload);
+    this.turns.set(event.payload.id, []);
   }
 
   private applyTurnStarted(event: TurnStarted) {
     this.currentPlayer = this.players.find((p) => p.id === event.payload.playerId)!;
-    this.turns.set(event.payload.playerId, [{ darts: [], overthrown: false }]);
+    this.turns.get(event.payload.playerId)!.push({ darts: [], overthrown: false });
   }
 
   private applyDartThrown(event: DartThrown) {

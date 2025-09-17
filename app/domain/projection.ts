@@ -1,7 +1,7 @@
 import { Checkout } from "../models/checkout";
 import { calcScore, Dart } from "../models/dart";
 import { PlayerState, PlayerWithPositon } from "../models/player";
-import { calcScoreOfTurns, findNextPlayer, Turn } from "../models/turn";
+import { Turn } from "../models/turn";
 import { sum } from "../utils/number";
 import { DartThrown, DomainEvent, GameCreated, PlayerAdded, PlayerWon, TurnStarted } from "./events";
 
@@ -127,9 +127,10 @@ export class GameProjection {
       case "TurnStarted":
         const turnStarted = event as TurnStarted;
         this.currentPlayer = this.players.find((p) => p.id === turnStarted.payload.playerId)!;
-        this.turns.set(turnStarted.payload.playerId, [{ darts: [], overthrown: false }]);
+        this.turns.get(this.currentPlayer.id)!.push({ darts: [], overthrown: false });
         break;
       case "GameStarted":
+        this.players.forEach((p) => this.turns.set(p.id, []));
         break;
       case "DartThrown":
         const { playerId, score, ring, overthrown } = (event as DartThrown).payload;

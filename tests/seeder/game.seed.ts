@@ -11,7 +11,7 @@ export function startGame(config?: { startpoints?: number; checkout?: Checkout; 
   });
   const playerCount = config?.playerCount ?? 1;
   for (let i = 0; i < playerCount; i++) {
-    const player = seedPlayer();
+    const player = seedPlayer({ id: i.toString() });
     game.addPlayer(player);
   }
   game.start();

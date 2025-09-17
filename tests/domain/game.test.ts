@@ -118,8 +118,20 @@ describe("Game", () => {
       var dartThrownEvent = events[0] as DartThrown;
       expect(dartThrownEvent.payload.overthrown).toBe(true);
     });
+    
+    it("⏩ should skip player if they have won", async () => {
+      const game = startGame({ startpoints: 2, checkout: "Double", playerCount: 2 });
 
-    it("↻ should change turn after 3 darts", async () => {
+      game.throwDart({ score: 1, ring: "D" });
+      game.throwDart({ score: 20 });
+      const events = game.flush();
+
+      const turnStarted = events[events.length - 1] as TurnStarted;
+      expect(turnStarted.type).toBe("TurnStarted");
+      expect(turnStarted.payload.playerId).toBe("1");
+    });
+
+    it("👥 should change turn after 3 darts", async () => {
       const game = seedDefaultGame();
 
       game.throwDart(randomDart());

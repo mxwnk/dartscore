@@ -3,8 +3,8 @@ import { PlayerBadge } from "./player-badge";
 import { Trophy } from "lucide-react";
 import { CurrentTurnView } from "@/app/domain/projection";
 import { PlayerState } from "@/app/models/player";
-import { Dart } from "@/app/models/dart";
 import { DartThrow } from "@/app/components/dart-throw";
+import { Pulse } from "@/app/components/pulse";
 
 export type PlayerRowProps = {
   name: string;
@@ -36,7 +36,7 @@ export function PlayerRow(props: PlayerRowProps) {
 
       <div className="flex flex-col content-center items-center">
         {props.state !== "won" && (
-          <h4 className="text-2xl">{props.remaining}</h4>
+          <Pulse value={props.remaining} as="h4" className="text-2xl" />
         )}
         {props.state === "won" && <Trophy />}
         <h6 className="text-1xl">{props.name}</h6>

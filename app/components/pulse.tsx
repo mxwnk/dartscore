@@ -12,17 +12,15 @@ export function Pulse<T>(props: PulseProps<T>) {
   const elementRef = useRef<HTMLElement | null>(null);
   const previousValueRef = useRef<T>(value);
 
-  const equals = ((a: T, b: T) => a === b);
 
   useEffect(() => {
+    const equals = ((a: T, b: T) => a === b);
     if (equals(previousValueRef.current, value)) {
       return;
     }
     const el = elementRef.current;
     if (el) {
       el.classList.remove("animate-score-bump");
-      // Force reflow to restart the animation
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       el.offsetWidth;
       el.classList.add("animate-score-bump");
     }

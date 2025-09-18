@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { submitDart } from "./submit-dart";
 import { undoLastThrow } from "./undo";
 
-const scores = [...Array.from(Array(21).keys()), 25];
+const scores = [...Array.from(Array(20).keys().map(x => x + 1))];
 
 type ScoreboardProps = {
   gameId: string;
@@ -65,6 +65,30 @@ export function Scoreboard(props: ScoreboardProps) {
             {s}
           </Button>
         ))}
+        <Button
+          onClick={() => {
+            navigator.vibrate(100);
+            onSumit(25);
+          }}
+          key={25}
+          className="py-8 col-span-2 w-[100%] text-2xl cursor-pointer"
+          disabled={ring === "T"}
+          variant="secondary"
+        >
+          25
+        </Button>
+        <Button
+          onClick={() => {
+            navigator.vibrate(100);
+            onSumit(0);
+          }}
+          key={0}
+          className="py-8 col-span-2 w-[100%] text-2xl cursor-pointer"
+          disabled={ring !== undefined}
+          variant="secondary"
+        >
+          0
+        </Button>
       </div>
       <div className="mt-4 grid grid-cols-3 gap-1">
         <Button

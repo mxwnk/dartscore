@@ -4,10 +4,41 @@ import { Game } from "../domain/game";
 import { GameProjection } from "../domain/projection";
 import { DomainEvent } from "../domain/events";
 import { GameEvent, Prisma } from "@/prisma/app/generated/prisma/client";
+import { GameHistory, GameHistoryProjection } from "../domain/gameHistory";
 
 export class PrismaRepository implements Repository {
   public static instance(): Repository {
     return new PrismaRepository();
+  }
+
+  public async getHistory(): Promise<GameHistory[]> {
+    const lastGameIds = await prisma.gameEvent.findMany({
+      where: {
+        type: "GameCreated",
+      },
+      distinct: ['gameId'],
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: { gameId: true },
+    });
+    const gameIds = lastGameIds.map(game => game.gameId);
+    const events = await prisma.gameEvent.findMany({
+      where: {
+        gameId: { in: gameIds },
+        type: { in: ['GameCreated', 'PlayerAdded'] },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+    const groupedEvents = events.reduce((acc, ev) => {
+      if (!acc[ev.gameId]) {
+        acc[ev.gameId] = [];
+      }
+      acc[ev.gameId].push(ev);
+      return acc;
+    }, {} as Record<string, typeof events>);
+    return Object.values(groupedEvents).map(events => GameHistoryProjection.from(events).toView());
   }
 
   public async save(game: Game): Promise<{ version: number }> {

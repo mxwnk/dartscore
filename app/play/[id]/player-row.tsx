@@ -18,13 +18,13 @@ export function PlayerRow(props: PlayerRowProps) {
   function rowStyle() {
     switch (props.state) {
       case "overthrown":
-        return "border-3 border-red-400 bg-red-400 text-white";
+        return "border-5 border-red-300 bg-red-300 text-white";
       case "won":
-        return "border-gray-300 bg-gray-300";
+        return "border-black-80 bg-black-80";
       case "playing":
-        return "border-primary";
+        return "border-primary bg-secondary";
       case "waiting":
-        return "border-gray-200";
+        return "border-black-80 border-5 bg-secondary";
     }
   }
 

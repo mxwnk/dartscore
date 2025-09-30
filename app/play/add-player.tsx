@@ -9,7 +9,7 @@ export function AddPlayerDialog({ showDialog, close }: { showDialog: boolean, cl
         close();
     }
     return (
-        <Dialog open={showDialog}>
+        <Dialog open={showDialog} onOpenChange={close}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Add new player</DialogTitle>
@@ -17,8 +17,8 @@ export function AddPlayerDialog({ showDialog, close }: { showDialog: boolean, cl
                 <form action={onSubmit} className="my-4">
                     <Input className="mb-8" type="text" maxLength={16} autoFocus placeholder="Name" name="name" />
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={close}>Cancel</Button>
-                        <Button type="submit">Add</Button>
+                        <Button className="cursor-pointer" type="button" variant="outline" onClick={close}>Cancel</Button>
+                        <Button className="cursor-pointer" type="submit">Add</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

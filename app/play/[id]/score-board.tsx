@@ -108,7 +108,7 @@ export function Scoreboard(props: ScoreboardProps) {
           Triple
         </Button>
         <Button
-          className="w-[100%] bg-red-400 h-18 py-4 text-4xl cursor-pointer"
+          className="w-[100%] bg-red-200 h-18 py-4 text-4xl cursor-pointer"
           onClick={() => {
             undoLastThrow(props.gameId);
             navigator.vibrate(100);

@@ -7,7 +7,7 @@ export function RoundBanner({ round, remaining }: RoundBannerProps) {
   const possibleCheckout = checkouts[remaining];
   const checkout = possibleCheckout ? ` - Checkout: ${possibleCheckout}` : "";
   return (
-    <div className="bg-gray-300 rounded-sm p-3 mb-2">
+    <div className="bg-black-80 rounded-sm p-3 mb-2">
       <h6 className="lg:text-3xl text-2xl">
         Round <b>{round}</b>
         {checkout}

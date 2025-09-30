@@ -8,7 +8,7 @@ export async function EventLog({ gameId, players }: { gameId: string, players: P
     const events = await repository.getEvents(gameId);
 
     return (
-        <div className="my-4 p-4">
+        <div className="my-4 p-4 bg-black-80">
             <h1 className="text-2xl font-bold">Event Log</h1>
             <Table>
                 <TableHeader>

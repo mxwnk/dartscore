@@ -10,12 +10,12 @@ export function PlayerBadge({ state }: { state: PlayerState; }) {
 function getColorByState(state: PlayerState) {
     switch (state) {
         case "overthrown":
-            return "bg-red-400"
+            return "bg-red-300"
         case "won":
-            return "bg-gray-300"
+            return "bg-black-80"
         case "playing":
             return "bg-primary"
         default:
-            return "bg-gray-200";
+            return "bg-black-80";
     }
 }

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { Navigation } from "./components/app-bar";
 import { Footer } from "./components/footer";
 import { History } from "./components/history";

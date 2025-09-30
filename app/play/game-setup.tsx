@@ -53,118 +53,116 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
   }
 
   return (
-    <>
-      <form action={startGame}>
-        <div className="flex flex-col items-stretch mx-auto max-w-[1024px] p-2">
-          <h2 className="text-6xl text-center">Game Setup</h2>
-          <div className="grid items-stretch">
-            <h4 className="text-4xl my-4">Starting Points</h4>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                className="w-full text-2xl cursor-pointer"
-                variant={startpoints === 301 ? "secondary" : "outline"}
-                onClick={() => setStartpoints(301)}
-              >
-                301
-              </Button>
-              <Button
-                type="button"
-                className="w-full text-2xl cursor-pointer"
-                variant={startpoints === 501 ? "secondary" : "outline"}
-                onClick={() => setStartpoints(501)}
-              >
-                501
-              </Button>
-              <input
-                name="startpoints"
-                readOnly
-                type="number"
-                hidden
-                value={startpoints}
-              />
-            </div>
-            <h4 className="text-4xl my-4">Checkout</h4>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <Button
-                type="button"
-                className="w-full text-2xl cursor-pointer"
-                variant={checkout === "Straight" ? "secondary" : "outline"}
-                onClick={() => setCheckout("Straight")}
-              >
-                Single
-              </Button>
-              <Button
-                variant={checkout === "Double" ? "secondary" : "outline"}
-                type="button"
-                className="w-full text-2xl cursor-pointer"
-                onClick={() => setCheckout("Double")}
-              >
-                Double
-              </Button>
-              <input
-                name="checkout"
-                readOnly
-                type="text"
-                hidden
-                value={checkout}
-              />
-            </div>
-            <h3 className="text-4xl my-8">Players</h3>
+    <form action={startGame} className="p-4">
+      <div className="flex flex-col items-stretch rounded-xl mt-4 max-w-[1024px] p-2 bg-black-80 p-4 mx-auto">
+        <h2 className="text-3xl text-center">Game Setup</h2>
+        <div className="grid items-stretch">
+          <h4 className="text-3xl my-4">Starting Points</h4>
+          <div className="grid grid-cols-2 gap-2">
             <Button
               type="button"
-              className="w-full h-12 text-2xl cursor-pointer"
-              variant="secondary"
-              onClick={() => setShowAddPlayerDialog(true)}
+              className="w-full text-2xl cursor-pointer"
+              variant={startpoints === 301 ? "outline" : "secondary"}
+              onClick={() => setStartpoints(301)}
             >
-              Add Player
+              301
             </Button>
-            {players.map((p, i) => {
-              const selected = selectedPlayerIds.some((id) => id === p.id);
-              return (
-                <Button
-                  onClick={() => togglePlayer(p)}
-                  id={p.id}
-                  variant={selected ? "secondary" : "outline"}
-                  draggable
-                  onDragStart={onPlayerDrag}
-                  onDragOver={enableDropping}
-                  onDrop={onPlayerDrop}
-                  className="my-2 flex flex-row justify-between cursor-pointer"
-                  type="button"
-                  key={i}
-                >
-                  {selected ? <MoveVertical /> : <User />} {p.name}{" "}
-                  {selected ? <CheckIcon /> : <Plus />}
-                </Button>
-              );
-            })}
+            <Button
+              type="button"
+              className="w-full text-2xl cursor-pointer"
+              variant={startpoints === 501 ? "outline" : "secondary"}
+              onClick={() => setStartpoints(501)}
+            >
+              501
+            </Button>
+            <input
+              name="startpoints"
+              readOnly
+              type="number"
+              hidden
+              value={startpoints}
+            />
           </div>
-          {players
-            .filter((p) => selectedPlayerIds.includes(p.id))
-            .map((p) => (
-              <input
-                key={p.id}
-                hidden
-                type="text"
-                name="players"
-                defaultValue={p.id}
-              />
-            ))}
+          <h4 className="text-4xl my-4">Checkout</h4>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <Button
+              type="button"
+              className="w-full text-2xl cursor-pointer"
+              variant={checkout === "Straight" ? "outline" : "secondary"}
+              onClick={() => setCheckout("Straight")}
+            >
+              Single
+            </Button>
+            <Button
+              variant={checkout === "Double" ? "outline" : "secondary"}
+              type="button"
+              className="w-full text-2xl cursor-pointer"
+              onClick={() => setCheckout("Double")}
+            >
+              Double
+            </Button>
+            <input
+              name="checkout"
+              readOnly
+              type="text"
+              hidden
+              value={checkout}
+            />
+          </div>
+          <h3 className="text-4xl my-8">Players</h3>
           <Button
-            className="mt-8 h-18 text-5xl cursor-pointer"
-            disabled={selectedPlayerIds.length === 0}
-            type="submit"
-            variant="default"
+            type="button"
+            className="w-full h-12 text-2xl cursor-pointer mb-4"
+            variant="secondary"
+            onClick={() => setShowAddPlayerDialog(true)}
           >
-            Start Game
+            Create Player
           </Button>
+          {players.map((p, i) => {
+            const selected = selectedPlayerIds.some((id) => id === p.id);
+            return (
+              <Button
+                onClick={() => togglePlayer(p)}
+                id={p.id}
+                variant="ghost"
+                draggable
+                onDragStart={onPlayerDrag}
+                onDragOver={enableDropping}
+                onDrop={onPlayerDrop}
+                className={`my-2 flex flex-row justify-between cursor-pointer ${selected ? "border-primary border-2" : "bg-background"}`}
+                type="button"
+                key={i}
+              >
+                {selected ? <MoveVertical /> : <User />} {p.name}{" "}
+                {selected ? <CheckIcon /> : <Plus />}
+              </Button>
+            );
+          })}
         </div>
-      </form>
+        {players
+          .filter((p) => selectedPlayerIds.includes(p.id))
+          .map((p) => (
+            <input
+              key={p.id}
+              hidden
+              type="text"
+              name="players"
+              defaultValue={p.id}
+            />
+          ))}
+        <Button
+          className={`mt-8 h-18 text-3xl rounded-lg text-white ${selectedPlayerIds.length === 0 ? "cursor-not-allowed" : "cursor-pointer"}`}
+          disabled={selectedPlayerIds.length === 0}
+          type="submit"
+          variant="default"
+        >
+          Start Game
+        </Button>
+      </div>
       <AddPlayerDialog
         showDialog={showAddPlayerDialog}
         close={() => setShowAddPlayerDialog(false)}
       />
-    </>
+    </form>
   );
 }

@@ -23,8 +23,8 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
             end={<><InviteButton /><SidebarTrigger className="ml-2" /></>}
           />
           <main>
-            <Sidebar className="mt-18" side="right" variant="sidebar">
-              <SidebarContent className="p-4">
+            <Sidebar className="mt-17" side="right" variant="sidebar">
+              <SidebarContent className="p-4 bg-black-80">
                 <EventLog gameId={gameId} players={gameView.players} />
               </SidebarContent>
             </Sidebar>

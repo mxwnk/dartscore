@@ -11,6 +11,9 @@ type GameSetupProps = {
   players: PlayerWithName[];
 };
 
+const gameStartPoints = [301, 501];
+const checkouts: Checkout[] = ["Straight", "Double"];
+
 export function GameSetup({ players: playerList }: GameSetupProps) {
   const [players, setPlayers] = useState(playerList);
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<string[]>([]);
@@ -53,28 +56,23 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
   }
 
   return (
-    <form action={startGame} className="p-4">
-      <div className="flex flex-col items-stretch rounded-xl mt-4 max-w-[1024px] p-2 bg-black-80 p-4 mx-auto">
+    <form action={startGame} className="p-4 rounded-xl">
+      <div className="flex flex-col items-stretch rounded-xl mt-4 max-w-[1024px] p-2 bg-popover p-4 mx-auto">
         <h2 className="text-3xl text-center">Game Setup</h2>
         <div className="grid items-stretch">
           <h4 className="text-3xl my-4">Starting Points</h4>
           <div className="grid grid-cols-2 gap-2">
-            <Button
-              type="button"
-              className="w-full text-2xl cursor-pointer"
-              variant={startpoints === 301 ? "outline" : "secondary"}
-              onClick={() => setStartpoints(301)}
-            >
-              301
-            </Button>
-            <Button
-              type="button"
-              className="w-full text-2xl cursor-pointer"
-              variant={startpoints === 501 ? "outline" : "secondary"}
-              onClick={() => setStartpoints(501)}
-            >
-              501
-            </Button>
+            {gameStartPoints.map((sp) => (
+              <Button
+                key={sp}
+                type="button"
+                className="w-full text-2xl cursor-pointer"
+                variant={startpoints === sp ? "secondary" : "outline"}
+                onClick={() => setStartpoints(sp)}
+              >
+                {sp}
+              </Button>
+            ))}
             <input
               name="startpoints"
               readOnly
@@ -85,22 +83,17 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
           </div>
           <h4 className="text-4xl my-4">Checkout</h4>
           <div className="grid grid-cols-2 gap-2 mt-2">
-            <Button
-              type="button"
-              className="w-full text-2xl cursor-pointer"
-              variant={checkout === "Straight" ? "outline" : "secondary"}
-              onClick={() => setCheckout("Straight")}
-            >
-              Single
-            </Button>
-            <Button
-              variant={checkout === "Double" ? "outline" : "secondary"}
-              type="button"
-              className="w-full text-2xl cursor-pointer"
-              onClick={() => setCheckout("Double")}
-            >
-              Double
-            </Button>
+            {checkouts.map((c) => (
+              <Button
+                key={c}
+                type="button"
+                className="w-full text-2xl cursor-pointer"
+                variant={checkout === c ? "secondary" : "outline"}
+                onClick={() => setCheckout(c)}
+              >
+                {c}
+              </Button>
+            ))}
             <input
               name="checkout"
               readOnly
@@ -113,7 +106,7 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
           <Button
             type="button"
             className="w-full h-12 text-2xl cursor-pointer mb-4"
-            variant="secondary"
+            variant="outline"
             onClick={() => setShowAddPlayerDialog(true)}
           >
             Create Player

@@ -1,5 +1,4 @@
 "use client";
-import { PlayerBadge } from "./player-badge";
 import { Trophy } from "lucide-react";
 import { CurrentTurnView } from "@/app/domain/projection";
 import { PlayerState } from "@/app/models/player";
@@ -18,13 +17,13 @@ export function PlayerRow(props: PlayerRowProps) {
   function rowStyle() {
     switch (props.state) {
       case "overthrown":
-        return "border-5 border-red-300 bg-red-300 text-white";
+        return "border-5 bg-red-300 border-red-300";
       case "won":
-        return "border-black-80 bg-black-80";
+        return "border-secondary bg-secondary";
       case "playing":
-        return "border-primary bg-secondary";
+        return "border-primary bg-popover";
       case "waiting":
-        return "border-black-80 border-5 bg-secondary";
+        return "border-secondary border-3 bg-popover";
     }
   }
 
@@ -60,4 +59,24 @@ export function PlayerRow(props: PlayerRowProps) {
       )}
     </div>
   );
+}
+
+function PlayerBadge({ state }: { state: PlayerState; }) {
+    const badgeColor = getColorByState(state);
+    return (
+        <div className={`w-[24px] h-full ${badgeColor}`} />
+    );
+}
+
+function getColorByState(state: PlayerState) {
+    switch (state) {
+        case "overthrown":
+            return "bg-red-300"
+        case "won":
+            return "bg-black-80"
+        case "playing":
+            return "bg-primary"
+        default:
+            return "bg-secondary";
+    }
 }

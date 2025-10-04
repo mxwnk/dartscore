@@ -113,7 +113,7 @@ export function Scoreboard(props: ScoreboardProps) {
             undoLastThrow(props.gameId);
             navigator.vibrate(100);
           }}
-          variant="destructive"
+          variant="outline"
         >
           Undo
         </Button>

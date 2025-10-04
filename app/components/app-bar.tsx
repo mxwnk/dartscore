@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { TargetIcon } from "lucide-react";
 import Link from "next/link";
 import { ReactElement } from "react";
+import { ThemeToggle } from "./theme-toggle";
 
 type NagivationProps = {
   title: string;
@@ -17,6 +18,7 @@ export function Navigation(props: NagivationProps) {
             <TargetIcon className="h-6 w-6" />
           </Link>
         </Button>
+        <ThemeToggle />
       </div>
       <h1 className="lg:text-2xl sm:text-center text-sm font-semibold ml-4 flex-grow">
         {props.title}

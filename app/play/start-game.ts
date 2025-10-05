@@ -14,9 +14,10 @@ export async function startGame(formData: FormData) {
   const players = await prisma.player.findMany({
     where: { id: { in: playerIds } },
   });
+  const legs = parseInt(formData.get("legs")?.toString() as string) as number;
   const playerMap = new Map(players.map((p) => [p.id, p]));
   const orderedPlayers = playerIds.map((id) => playerMap.get(id)!);
-  const game = Game.create({ checkout, startpoints });
+  const game = Game.create({ checkout, startpoints, legs });
   orderedPlayers.forEach((p) => game.addPlayer(p));
   game.start();
   await repository.save(game);

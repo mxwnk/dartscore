@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, User, Plus, MoveVertical } from "lucide-react";
 import { Checkout } from "../models/checkout";
+import { ButtonGroup } from "@/components/ui/button-group";
 
 type GameSetupProps = {
   players: PlayerWithName[];
@@ -13,6 +14,7 @@ type GameSetupProps = {
 
 const gameStartPoints = [301, 501];
 const checkouts: Checkout[] = ["Straight", "Double"];
+const possibleLegs: number[] = Array.from({ length: 9 }, (_, i) => i + 1).filter(l => l % 2 === 1);
 
 export function GameSetup({ players: playerList }: GameSetupProps) {
   const [players, setPlayers] = useState(playerList);
@@ -20,6 +22,7 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
   const [showAddPlayerDialog, setShowAddPlayerDialog] = useState(false);
   const [startpoints, setStartpoints] = useState<number>(301);
   const [checkout, setCheckout] = useState<Checkout>("Straight");
+  const [legs, setLegs] = useState<number>(possibleLegs[1]);
 
   useEffect(() => {
     setPlayers(playerList);
@@ -39,7 +42,6 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
 
   function onPlayerDrag(event: React.DragEvent<HTMLElement>) {
     event.dataTransfer.setData("playerId", event.currentTarget.id);
-    console.log(event.currentTarget.id);
   }
 
   function onPlayerDrop(event: React.DragEvent<HTMLElement>) {
@@ -60,7 +62,7 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
       <div className="flex flex-col items-stretch rounded-xl mt-4 max-w-[1024px] p-2 bg-popover p-4 mx-auto">
         <h2 className="text-3xl text-center">Game Setup</h2>
         <div className="grid items-stretch">
-          <h4 className="text-3xl my-4">Starting Points</h4>
+          <h3 className="text-3xl my-4">Starting Points</h3>
           <div className="grid grid-cols-2 gap-2">
             {gameStartPoints.map((sp) => (
               <Button
@@ -81,7 +83,7 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
               value={startpoints}
             />
           </div>
-          <h4 className="text-4xl my-4">Checkout</h4>
+          <h3 className="text-3xl my-4">Checkout</h3>
           <div className="grid grid-cols-2 gap-2 mt-2">
             {checkouts.map((c) => (
               <Button
@@ -102,7 +104,28 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
               value={checkout}
             />
           </div>
-          <h3 className="text-4xl my-8">Players</h3>
+          <h3 className="text-3xl my-4">Legs</h3>
+          <ButtonGroup className="flex w-full">
+            {possibleLegs.map((l) => (
+              <Button
+                key={l}
+                type="button"
+                className="cursor-pointer text-2xl flex-1"
+                variant={legs === l ? "secondary" : "outline"}
+                onClick={() => setLegs(l)}
+              >
+                {l}
+              </Button>
+            ))}
+          </ButtonGroup>
+          <input
+            name="legs"
+            readOnly
+            type="number"
+            hidden
+            value={legs}
+          />
+          <h3 className="text-3xl my-8">Players</h3>
           <Button
             type="button"
             className="w-full h-12 text-2xl cursor-pointer mb-4"

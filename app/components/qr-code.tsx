@@ -13,5 +13,11 @@ export function QrCode({ text }: { text: string }) {
   if (!dataUrl) {
     return <></>;
   }
-  return <Image className="h-full w-full" src={dataUrl} alt="QR Code" />;
+  return <Image
+    width={200}
+    height={200}
+    className="h-full w-full"
+    src={dataUrl}
+    alt="Play dart game qr code"
+  />;
 }

@@ -20,7 +20,7 @@ export function Navigation(props: NagivationProps) {
         </Button>
         <ThemeToggle />
       </div>
-      <h1 className="lg:text-2xl sm:text-center text-sm font-semibold ml-4 flex-grow">
+      <h1 className="lg:text-2xl text-center text-sm font-semibold ml-4 flex-grow">
         {props.title}
       </h1>
       {props.end}

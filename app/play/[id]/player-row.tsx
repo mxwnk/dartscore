@@ -8,6 +8,7 @@ import { Pulse } from "@/app/components/pulse";
 export type PlayerRowProps = {
   name: string;
   state: PlayerState;
+  legsWon: number;
   remaining: number;
   average: number;
   turn?: CurrentTurnView;
@@ -28,17 +29,15 @@ export function PlayerRow(props: PlayerRowProps) {
   }
 
   return (
-    <div
-      className={`shadow-md border-3 rounded-sm grid grid-cols-[24px_1fr_2fr_1fr] border-solid items-center row gap-3 justify-between mb-5 pr-4 ${rowStyle()}`}
-    >
-      <PlayerBadge state={props.state} />
+    <div className={`shadow-md border-3 rounded-sm grid grid-cols-[24px_1fr_2fr_1fr] border-solid items-center row gap-3 justify-between mb-5 pr-4 ${rowStyle()}`}>
+      <PlayerBadge state={props.state} legs={props.legsWon} />
 
       <div className="flex flex-col content-center items-center">
         {props.state !== "won" && (
           <Pulse value={props.remaining} as="h4" className="text-2xl" />
         )}
         {props.state === "won" && <Trophy />}
-        <h6 className="text-1xl">{props.name}</h6>
+        <h6 className="text-1xl text-center">{props.name}</h6>
       </div>
 
       {props.turn && (
@@ -61,22 +60,26 @@ export function PlayerRow(props: PlayerRowProps) {
   );
 }
 
-function PlayerBadge({ state }: { state: PlayerState; }) {
-    const badgeColor = getColorByState(state);
-    return (
-        <div className={`w-[24px] h-full ${badgeColor}`} />
-    );
+function PlayerBadge({ state, legs }: { state: PlayerState; legs: number; }) {
+  const badgeColor = getColorByState(state);
+  return (
+    <div className={`w-[24px] h-full ${badgeColor} gap-1 flex flex-col justify-center items-center p-1`}>
+      {Array.from({ length: legs }, (_, i) => i + 1).map((l) => (
+        <div key={l} className={`w-[12px] h-[12px] bg-muted rounded-full`} />
+      ))}
+    </div>
+  );
 }
 
 function getColorByState(state: PlayerState) {
-    switch (state) {
-        case "overthrown":
-            return "bg-red-300"
-        case "won":
-            return "bg-black-80"
-        case "playing":
-            return "bg-primary"
-        default:
-            return "bg-secondary";
-    }
+  switch (state) {
+    case "overthrown":
+      return "bg-red-300"
+    case "won":
+      return "bg-black-80"
+    case "playing":
+      return "bg-primary"
+    default:
+      return "bg-secondary";
+  }
 }

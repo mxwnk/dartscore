@@ -17,6 +17,7 @@ export function Game({ gameId, gameView }: GameProps) {
           <PlayerRow
             key={i}
             state={p.state}
+            legsWon={p.legsWon}
             name={p.name}
             remaining={p.remaining}
             average={p.average}

@@ -24,6 +24,7 @@ export type PlayerView = {
   remaining: number;
   state: PlayerState;
   average: number;
+  legsWon: number;
   currentTurn?: CurrentTurnView;
 };
 
@@ -35,6 +36,7 @@ export type CurrentTurnView = {
 export class GameProjection {
   private players: PlayerWithPositon[] = [];
   private turns: Map<string, Turn[]> = new Map();
+  private legsWon: Map<string, number> = new Map();
   private gameId!: string;
   private setup!: Setup;
   private currentPlayer!: PlayerWithPositon;
@@ -97,6 +99,7 @@ export class GameProjection {
       state: state(),
       remaining,
       average: Math.round(average * 100) / 100,
+      legsWon: this.legsWon.get(player.id) ?? 0,
       currentTurn: currentTurn
         ? {
             darts: currentTurn.darts,
@@ -120,6 +123,7 @@ export class GameProjection {
         const playerAdded = event as PlayerAdded;
         this.players.push(playerAdded.payload);
         this.turns.set(playerAdded.payload.id, []);
+        this.legsWon.set(playerAdded.payload.id, 0);
         break;
       case "TurnStarted":
         const turnStarted = event as TurnStarted;
@@ -130,8 +134,11 @@ export class GameProjection {
         this.players.forEach((p) => this.turns.set(p.id, []));
         break;
       case "LegWon":
-        const _legWon = event as LegWon;
+        const legWon = event as LegWon;
         this.players = this.rotatePlayersLeft(this.players);
+        const winnerId = legWon.payload.winner.playerId;
+        const legCount = this.legsWon.get(winnerId) ?? 0;
+        this.legsWon.set(winnerId, legCount + 1);
         break;
       case "LegStarted":
         this.turns = new Map(this.players.map((p) => [p.id, []]));

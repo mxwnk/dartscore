@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dart } from "../models/dart";
-import DartIcon from "@/public/dart.svg";
-import Image from "next/image";
+import { DartIcon } from "../assets/dart-icon";
 
 export function DartThrow(props: { dart: Dart | undefined }) {
   const [showEmoji, setShowEmoji] = useState(false);
@@ -63,7 +62,7 @@ export function DartThrow(props: { dart: Dart | undefined }) {
     <div className="relative flex items-center justify-center">
       {showEmoji && (
         <span className="absolute inset-0 z-10 flex items-center justify-center text-4xl leading-none select-none pointer-events-none animate-dart-emoji">
-          <Image src={DartIcon} className="w-8 h-8" alt="Dart Icon" />
+          <DartIcon className="w-8 h-8 text-foreground" />
         </span>
       )}
       <h5 className="text-2xl">{showEmoji ? "\u00A0" : dartLabel}</h5>

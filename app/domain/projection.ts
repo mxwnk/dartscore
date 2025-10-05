@@ -3,13 +3,13 @@ import { calcScore, Dart } from "../models/dart";
 import { PlayerState, PlayerWithPositon } from "../models/player";
 import { Turn } from "../models/turn";
 import { sum } from "../utils/number";
-import { DartThrown, DomainEvent, GameCreated, PlayerAdded, PlayerWon, TurnStarted } from "./events";
+import { DartThrown, DomainEvent, GameCreated, PlayerAdded, TurnStarted, LegWon } from "./events";
+import { Setup } from "../models/setup";
 
 export type GameView = {
   gameId: string;
+  setup: Setup;
   version: number;
-  startpoints: number;
-  checkout: Checkout;
   players: PlayerView[];
   round: {
     number: number;
@@ -36,8 +36,7 @@ export class GameProjection {
   private players: PlayerWithPositon[] = [];
   private turns: Map<string, Turn[]> = new Map();
   private gameId!: string;
-  private startpoints!: number;
-  private checkout!: Checkout;
+  private setup!: Setup;
   private currentPlayer!: PlayerWithPositon;
   private version: number;
 
@@ -61,8 +60,7 @@ export class GameProjection {
     return {
       gameId: this.gameId,
       version: this.version,
-      checkout: this.checkout,
-      startpoints: this.startpoints,
+      setup: this.setup,
       players,
       round: {
         number: roundNumber,
@@ -79,7 +77,7 @@ export class GameProjection {
       .map(calcScore)
       .reduce(sum, 0);
     const average = validTurns.length ? scoredPoints / validTurns.length : 0;
-    const remaining = this.startpoints - scoredPoints;
+    const remaining = this.setup.startpoints - scoredPoints;
     const currentTurn = turns.at(-1);
     const state = () => {
       if (remaining === 0) {
@@ -116,8 +114,7 @@ export class GameProjection {
       case "GameCreated":
         const gameCreated = event as GameCreated;
         this.gameId = gameCreated.gameId;
-        this.checkout = gameCreated.payload.checkout;
-        this.startpoints = gameCreated.payload.startpoints;
+        this.setup = gameCreated.payload;
         break;
       case "PlayerAdded":
         const playerAdded = event as PlayerAdded;
@@ -132,6 +129,13 @@ export class GameProjection {
       case "GameStarted":
         this.players.forEach((p) => this.turns.set(p.id, []));
         break;
+      case "LegWon":
+        const _legWon = event as LegWon;
+        this.players = this.rotatePlayersLeft(this.players);
+        break;
+      case "LegStarted":
+        this.turns = new Map(this.players.map((p) => [p.id, []]));
+        break;
       case "DartThrown":
         const { playerId, score, ring, overthrown } = (event as DartThrown).payload;
         this.currentPlayer = this.players.find((p) => p.id === playerId)!;
@@ -141,6 +145,11 @@ export class GameProjection {
         currentTurn.overthrown = overthrown;
         break;
     }
+  }
+
+  private rotatePlayersLeft(players: PlayerWithPositon[]) {
+    const playerCount = players.length;
+    return players.map((p) => ({ ...p, position: (p.position - 1 + playerCount) % playerCount }));
   }
 }
 

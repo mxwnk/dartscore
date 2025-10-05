@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Game } from "@/app/domain/game";
 import { seedPlayer } from "../seeder/player.seed";
-import { DartThrown, PlayerAdded, TurnStarted } from "@/app/domain/events";
+import { DartThrown, GameOver, LegStarted, LegWon, PlayerAdded, TurnStarted } from "@/app/domain/events";
 import { randomDart } from "../seeder/dart.seed";
 import { seedDefaultGame, startGame } from "../seeder/game.seed";
 
@@ -40,7 +40,7 @@ describe("Game", () => {
     expect(playerAddedEvents.length).toBe(2);
     playerAddedEvents.every((e) => expect(e.type).toBe("PlayerAdded"));
   });
-  
+
   it("🙋‍♂️ should prevent adding player after game started", async () => {
     const game = startGame();
 
@@ -49,99 +49,151 @@ describe("Game", () => {
     expect(action).toThrow("Game already started");
   });
 
-  describe("Darts", () => {
-    it("🎯 should track thrown darts", async () => {
-      const game = startGame();
+  it("🎯 should track thrown darts", async () => {
+    const game = startGame();
 
-      game.throwDart({ score: 1, ring: "D" });
+    game.throwDart({ score: 1, ring: "D" });
 
-      const events = game.flush();
-      expect(events.length).toBe(1);
-      var dartThrownEvent = events[0] as DartThrown;
-      expect(dartThrownEvent.type).toBe("DartThrown");
-      expect(dartThrownEvent.payload.score).toBe(1);
-      expect(dartThrownEvent.payload.ring).toBe("D");
-    });
+    const events = game.flush();
+    expect(events.length).toBe(1);
+    var dartThrownEvent = events[0] as DartThrown;
+    expect(dartThrownEvent.type).toBe("DartThrown");
+    expect(dartThrownEvent.payload.score).toBe(1);
+    expect(dartThrownEvent.payload.ring).toBe("D");
+  });
 
-    it("✅ should mark throw as legal if missing score > 0", async () => {
-      const game = startGame({ startpoints: 2 });
+  it("✅ should mark throw as legal if missing score > 0", async () => {
+    const game = startGame({ startpoints: 2 });
 
-      game.throwDart({ score: 1 });
+    game.throwDart({ score: 1 });
 
-      const events = game.flush();
-      expect(events.length).toBe(1);
-      var dartThrownEvent = events[0] as DartThrown;
-      expect(dartThrownEvent.type).toBe("DartThrown");
-      expect(dartThrownEvent.payload.overthrown).toBe(false);
-    });
+    const events = game.flush();
+    expect(events.length).toBe(1);
+    var dartThrownEvent = events[0] as DartThrown;
+    expect(dartThrownEvent.type).toBe("DartThrown");
+    expect(dartThrownEvent.payload.overthrown).toBe(false);
+  });
 
-    it("✅ should mark throw as legal if double out checked ", async () => {
-      const game = startGame({ startpoints: 2, checkout: "Double" });
+  it("✅ should mark throw as legal if double out checked ", async () => {
+    const game = startGame({ startpoints: 2, checkout: "Double" });
 
-      game.throwDart({ score: 1, ring: "D" });
+    game.throwDart({ score: 1, ring: "D" });
 
-      const events = game.flush();
-      var dartThrownEvent = events[0] as DartThrown;
-      expect(dartThrownEvent.payload.overthrown).toBe(false);
-    });
+    const events = game.flush();
+    var dartThrownEvent = events[0] as DartThrown;
+    expect(dartThrownEvent.payload.overthrown).toBe(false);
+  });
 
-    it("❌ should mark throw as overthrown if score < 0", async () => {
-      const game = startGame({ startpoints: 2 });
+  it("❌ should mark throw as overthrown if score < 0", async () => {
+    const game = startGame({ startpoints: 2 });
 
-      game.start();
-      game.throwDart({ score: 3, ring: "D" });
+    game.start();
+    game.throwDart({ score: 3, ring: "D" });
 
-      const events = game.flush();
-      expect(events.length).toBe(4);
-      var dartThrownEvent = events.at(2) as DartThrown;
-      expect(dartThrownEvent.type).toBe("DartThrown");
-      expect(dartThrownEvent.payload.overthrown).toBe(true);
-    });
+    const events = game.flush();
+    const dartThrownEvent = events.find((e) => e.type === "DartThrown") as DartThrown;
+    expect(dartThrownEvent.payload.overthrown).toBe(true);
+  });
 
-    it("❌ should mark throw as overthrown if double checkout busted", async () => {
-      const game = startGame({ startpoints: 2, checkout: "Double" });
+  it("❌ should mark throw as overthrown if double checkout busted", async () => {
+    const game = startGame({ startpoints: 2, checkout: "Double" });
 
-      game.start();
-      game.throwDart({ score: 1, ring: undefined });
+    game.start();
+    game.throwDart({ score: 1, ring: undefined });
 
-      const events = game.flush();
-      var dartThrownEvent = events[2] as DartThrown;
-      expect(dartThrownEvent.payload.overthrown).toBe(true);
-    });
+    const events = game.flush();
+    const dartThrownEvent = events.find((e) => e.type === "DartThrown") as DartThrown;
+    expect(dartThrownEvent.payload.overthrown).toBe(true);
+  });
 
-    it("❌ should mark throw as overthrown if double out missed", async () => {
-      const game = startGame({ startpoints: 2, checkout: "Double" });
+  it("❌ should mark throw as overthrown if double out missed", async () => {
+    const game = startGame({ startpoints: 2, checkout: "Double" });
 
-      game.throwDart({ score: 2, ring: undefined });
+    game.throwDart({ score: 2, ring: undefined });
 
-      const events = game.flush();
-      var dartThrownEvent = events[0] as DartThrown;
-      expect(dartThrownEvent.payload.overthrown).toBe(true);
-    });
-    
-    it("⏩ should skip player if they have won", async () => {
-      const game = startGame({ startpoints: 2, checkout: "Double", playerCount: 2 });
+    const events = game.flush();
+    const dartThrownEvent = events.find((e) => e.type === "DartThrown") as DartThrown;
+    expect(dartThrownEvent.payload.overthrown).toBe(true);
+  });
 
-      game.throwDart({ score: 1, ring: "D" });
-      game.throwDart({ score: 20 });
-      const events = game.flush();
+  it("⏩ should skip player if they have won", async () => {
+    const game = startGame({ startpoints: 2, checkout: "Double", playerCount: 2 });
 
-      const turnStarted = events[events.length - 1] as TurnStarted;
-      expect(turnStarted.type).toBe("TurnStarted");
-      expect(turnStarted.payload.playerId).toBe("1");
-    });
+    game.throwDart({ score: 1, ring: "D" });
+    game.throwDart({ score: 20 });
+    const events = game.flush();
 
-    it("👥 should change turn after 3 darts", async () => {
-      const game = seedDefaultGame();
+    const turnStarted = events.find((e) => e.type === "TurnStarted") as TurnStarted;
+    expect(turnStarted.type).toBe("TurnStarted");
+    expect(turnStarted.payload.playerId).toBe("1");
+  });
 
-      game.throwDart(randomDart());
-      game.throwDart(randomDart());
-      game.throwDart(randomDart());
-      const events = game.flush();
+  it("🦵 should mark leg as won", async () => {
+    const game = startGame({ startpoints: 2, checkout: "Double", playerCount: 2 });
 
-      const turnStarted = events[events.length - 1] as TurnStarted;
+    game.throwDart({ score: 1, ring: "D" });
+    const events = game.flush();
 
-      expect(turnStarted.type).toBe("TurnStarted");
-    });
+    const legWon = events.find((e) => e.type === "LegWon") as LegWon;
+    expect(legWon.type).toBe("LegWon");
+    expect(legWon.payload.winner.playerId).toBe("0");
+  });
+  
+  it("🦵 should start new leg", async () => {
+    const game = startGame({ startpoints: 2, playerCount: 2, legs: 3 });
+
+    game.throwDart({ score: 1, ring: "D" });
+
+    const events = game.flush();
+    const legStarted = events.find((e) => e.type === "LegStarted") as LegStarted;
+    expect(legStarted.type).toBe("LegStarted");
+  });
+  
+  it("🦵 should handle multiple legs", async () => {
+    const game = startGame({ startpoints: 1, checkout: "Straight", playerCount: 2, legs: 3 });
+
+    game.throwDart({ score: 1 }); // Player 1 wins first leg
+    game.throwDart({ score: 2 }); // Player 2 overthrows
+    game.throwDart({ score: 1 }); // Player 1 wins second leg and game
+
+    const events = game.flush();
+    const eventTypes = events.map(e => e.type);
+    expect(eventTypes).toEqual(
+      [
+        'DartThrown',
+        'LegWon',
+        'LegStarted',
+        'TurnStarted',
+        'DartThrown',
+        'TurnStarted',
+        'DartThrown',
+        'LegWon',
+        'GameOver'
+      ]
+    );
+  });
+
+  it("👥 should change turn after 3 darts", async () => {
+    const game = seedDefaultGame();
+
+    game.throwDart(randomDart());
+    game.throwDart(randomDart());
+    game.throwDart(randomDart());
+    const events = game.flush();
+
+    const turnStarted = events[events.length - 1] as TurnStarted;
+
+    expect(turnStarted.type).toBe("TurnStarted");
+  });
+  
+  it("🏆 should set game over", async () => {
+    const game = startGame({ startpoints: 2, checkout: "Double", playerCount: 2, legs: 1 });
+
+    game.throwDart({ score: 1, ring: "D" });
+    const events = game.flush();
+
+    const turnStarted = events.find((e) => e.type === "GameOver") as GameOver;
+    expect(turnStarted.type).toBe("GameOver");
+    expect(turnStarted.payload.winner.playerId).toBe("0");
   });
 });

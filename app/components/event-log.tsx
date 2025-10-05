@@ -1,7 +1,7 @@
 import { repository } from "../db/repository";
 import { GameEvent } from "@/prisma/app/generated/prisma/client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DartThrown, GameCreated, PlayerAdded, PlayerWon, TurnStarted } from "../domain/events";
+import { DartThrown, GameCreated, PlayerAdded, GameOver, TurnStarted, LegWon } from "../domain/events";
 import { PlayerView } from "../domain/projection";
 
 export async function EventLog({ gameId, players }: { gameId: string, players: PlayerView[] }) {
@@ -46,11 +46,16 @@ function formatPayload(event: GameEvent, players: PlayerView[]): import("react")
         case "TurnStarted":
             const turnStartedEvent = event as TurnStarted;
             return `Player: ${players.find((p) => p.id === turnStartedEvent.payload.playerId)?.name}`;
-        case "PlayerWon":
-            const playerWonEvent = event as PlayerWon;
-            return `Player: ${players.find((p) => p.id === playerWonEvent.payload.playerId)?.name}`;
+        case "GameOver":
+            const playerWonEvent = event as GameOver;
+            return `Player: ${players.find((p) => p.id === playerWonEvent.payload.winner.playerId)?.name}`;
         case "GameStarted":
             return "Game started";
+        case "LegStarted":
+            return "Leg started";
+        case "LegWon":
+            const legWonEvent = event as LegWon;
+            return `Player: ${players.find((p) => p.id === legWonEvent.payload.winner.playerId)?.name}`;
         default:
             return "Unknown event?";
     }
@@ -65,11 +70,15 @@ function eventType(type: string): string {
         case "GameCreated":
             return "🕹️";
         case "TurnStarted":
-            return "👥";
-        case "PlayerWon":
-            return "🏆";
+            return "🔄";
+        case "GameOver":
+            return "🏁";
         case "GameStarted":
             return "🏁";
+        case "LegStarted":
+            return "🦵";
+        case "LegWon":
+            return "🏆"
         default:
             return type;
     }

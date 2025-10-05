@@ -1,39 +1,50 @@
 import {
-  dartThrownEvent,
   DartThrown,
   DomainEvent,
   GameCreated,
-  gameCreatedEvent,
-  PlayerAdded,
-  playerAddedEvent,
-  TurnStarted,
-  playerWonEvent,
-  PlayerWon,
-  turnStartedEvent,
-  gameStartedEvent,
+  GameOver,
   GameStarted,
+  LegStarted,
+  LegWon,
+  PlayerAdded,
+  TurnStarted,
+  dartThrownEvent,
+  gameCreatedEvent,
+  gameOverEvent,
+  gameStartedEvent,
+  legStartedEvent,
+  legWonEvent,
+  playerAddedEvent,
+  turnStartedEvent,
 } from "./events";
 import { calcScoreOfTurns, findNextPlayer, Turn } from "../models/turn";
 import { calcScore, Dart } from "../models/dart";
 import { Player, PlayerWithPositon } from "../models/player";
 import { Checkout } from "../models/checkout";
 import { createGameId } from "../models/id";
+import { Setup } from "../models/setup";
 
 export class Game {
   private id: string;
   private events: DomainEvent[] = [];
-  private players: PlayerWithPositon[] = [];
-  private startpoints!: number;
-  private checkout!: Checkout;
-  private currentPlayer!: PlayerWithPositon;
-  private turns: Map<string, Turn[]> = new Map();
-  private gameStarted: boolean = false;
 
-  public static create(setup?: { startpoints?: number; checkout?: Checkout }) {
+  private setup!: Setup;
+  private gameStarted: boolean = false;
+  private gameOver: boolean = false;
+
+  private players: PlayerWithPositon[] = [];
+  private currentPlayer!: PlayerWithPositon;
+  private playerTurns: Map<string, Turn[]> = new Map();
+
+  private playerLegs: Map<string, number> = new Map();
+  private currentLeg: number = 0;
+
+  public static create(setup?: { startpoints?: number; checkout?: Checkout, legs?: number }) {
     const gameCreated = gameCreatedEvent({
       gameId: createGameId(),
       startpoints: setup?.startpoints ?? 301,
       checkout: setup?.checkout ?? "Straight",
+      legs: setup?.legs ?? 3,
     });
     return new Game([gameCreated]);
   }
@@ -59,6 +70,9 @@ export class Game {
   public start() {
     const gameStarted = gameStartedEvent({ gameId: this.id });
     this.apply(gameStarted);
+
+    const legStarted = legStartedEvent({ gameId: this.id, createdBy: gameStarted.id });
+    this.apply(legStarted);
 
     const turnStarted = turnStartedEvent({
       gameId: this.id,
@@ -93,20 +107,60 @@ export class Game {
     }
     const dartThrown = this.handleDartThrow(dart);
 
-    const isTurnOver = this.handleIsTurnOver(dartThrown);
+    if (this.isLegWon()) {
+      return this.handleLegWon(dartThrown);
+    }
 
-    if (!isTurnOver) {
+    if (this.isTurnOver()) {
+      this.startNewTurn(dartThrown);
+    }
+  }
+
+  private isLegWon() {
+    return this.calculateMissingScore(this.currentPlayer.id) === 0;
+  }
+
+  private handleLegWon(dartThrown: DartThrown) {
+    const legWon = legWonEvent({
+      gameId: this.id,
+      createdBy: dartThrown.id,
+      payload: { winner: { playerId: this.currentPlayer.id } },
+    });
+    this.apply(legWon);
+
+    if (this.isGameOver()) {
+      const playerWon = gameOverEvent({
+        gameId: this.id,
+        createdBy: dartThrown.id,
+        payload: { winner: { playerId: this.currentPlayer.id } },
+      });
+      this.apply(playerWon);
       return;
     }
 
-    this.handleNextTurn(dartThrown);
+    const legStarted = legStartedEvent({ gameId: this.id, createdBy: dartThrown.id });
+    this.apply(legStarted);
+
+    const nextStarter = this.players.find((p) => p.position === 0)!;
+    const turnStarted = turnStartedEvent({
+      gameId: this.id,
+      createdBy: dartThrown.id,
+      payload: { playerId: nextStarter.id },
+    });
+    this.apply(turnStarted);
   }
 
-  private handleNextTurn(dartThrown: DartThrown) {
+  private isTurnOver() {
+    const playerTurns = this.playerTurns.get(this.currentPlayer.id)!;
+    const currentTurn = playerTurns.at(-1)!;
+    return currentTurn.darts.length === 3 || currentTurn.overthrown;
+  }
+
+  private startNewTurn(dartThrown: DartThrown) {
     const nextPlayer = findNextPlayer({
-      playerTurns: this.turns,
+      playerTurns: this.playerTurns,
       currentPlayer: this.currentPlayer,
-      startpoints: this.startpoints,
+      startpoints: this.setup.startpoints,
       players: this.players,
     });
 
@@ -120,23 +174,6 @@ export class Game {
       payload: { playerId: nextPlayer.id },
     });
     this.apply(turnStarted);
-  }
-
-  private handleIsTurnOver(dartThrown: DartThrown) {
-    const playerTurns = this.turns.get(this.currentPlayer.id)!;
-    const currentTurn = playerTurns.at(-1)!;
-    const hasPlayerWon = this.hasPlayerWon(this.currentPlayer.id);
-
-    if (hasPlayerWon) {
-      const playerWon = playerWonEvent({
-        gameId: this.id,
-        createdBy: dartThrown.id,
-        payload: { playerId: this.currentPlayer.id },
-      });
-      this.apply(playerWon);
-    }
-
-    return currentTurn.darts.length === 3 || currentTurn.overthrown || hasPlayerWon;
   }
 
   private handleDartThrow(dart: Dart) {
@@ -160,11 +197,11 @@ export class Game {
     if (newMissingScore < 0) {
       return true;
     }
-    if (this.checkout == "Double" && newMissingScore === 1) {
+    if (this.setup.checkout == "Double" && newMissingScore === 1) {
       return true;
     }
     if (
-      this.checkout == "Double" &&
+      this.setup.checkout == "Double" &&
       dartThrow.ring !== "D" &&
       newMissingScore === 0
     ) {
@@ -173,20 +210,20 @@ export class Game {
     return false;
   }
 
-  private hasPlayerWon(playerId: string) {
-    return this.calculateMissingScore(playerId) === 0;
-  }
-
   private calculateMissingScore(playerId: string) {
-    const playerTurns = this.turns.get(playerId);
+    const playerTurns = this.playerTurns.get(playerId);
     if (!playerTurns) {
-      return this.startpoints;
+      return this.setup.startpoints;
     }
-    return this.startpoints - calcScoreOfTurns(playerTurns);
+    return this.setup.startpoints - calcScoreOfTurns(playerTurns);
   }
 
   private isGameOver() {
-    return this.players.every((p) => this.hasPlayerWon(p.id));
+    if (this.gameOver) {
+      return true;
+    }
+    const legsToWin = Math.ceil(this.setup.legs / 2);
+    return this.players.some((p) => this.playerLegs.get(p.id)! === legsToWin);
   }
 
   private apply(event: DomainEvent) {
@@ -197,37 +234,42 @@ export class Game {
       case "PlayerAdded":
         this.applyPlayerAdded(event as PlayerAdded);
         break;
-      case "DartThrown":
-        this.applyDartThrown(event as DartThrown);
+      case "GameStarted":
+        this.applyGameStarted(event as GameStarted);
+        break;
+      case "LegStarted":
+        this.applyLegStarted(event as LegStarted);
         break;
       case "TurnStarted":
         this.applyTurnStarted(event as TurnStarted);
         break;
-      case "GameStarted":
-        this.applyGameStarted(event as GameStarted);
+      case "DartThrown":
+        this.applyDartThrown(event as DartThrown);
         break;
-      case "PlayerWon":
-        this.applyPlayerWon(event as PlayerWon);
+      case "LegWon":
+        this.applyLegWon(event as LegWon);
+        break;
+      case "GameOver":
+        this.applyGameOver(event as GameOver);
         break;
       default:
         const exhaustiveCheck: never = event.type;
-        throw new Error(`Unhandled color case: ${exhaustiveCheck}`);
+        throw new Error(`Unhandled case: ${exhaustiveCheck}`);
     }
     this.events.push(event);
   }
 
-  private applyPlayerWon(event: PlayerWon) {
-    // throw new Error("Method not implemented.");
+  private applyGameOver(_: GameOver) {
+    this.gameOver = true;
   }
 
-  private applyGameStarted(event: GameStarted) {
+  private applyGameStarted(_: GameStarted) {
     this.gameStarted = true;
   }
 
   private applyGameCreated(event: GameCreated) {
     this.id = event.gameId;
-    this.startpoints = event.payload.startpoints;
-    this.checkout = event.payload.checkout;
+    this.setup = event.payload;
   }
 
   private applyPlayerAdded(event: PlayerAdded) {
@@ -235,19 +277,37 @@ export class Game {
       this.currentPlayer = event.payload;
     }
     this.players.push(event.payload);
-    this.turns.set(event.payload.id, []);
+    this.playerTurns.set(event.payload.id, []);
+    this.playerLegs.set(event.payload.id, 0);
   }
 
   private applyTurnStarted(event: TurnStarted) {
     this.currentPlayer = this.players.find((p) => p.id === event.payload.playerId)!;
-    this.turns.get(event.payload.playerId)!.push({ darts: [], overthrown: false });
+    this.playerTurns.get(event.payload.playerId)!.push({ darts: [], overthrown: false });
   }
 
   private applyDartThrown(event: DartThrown) {
     const { playerId, score, ring, overthrown } = event.payload;
-    const playerTurns = this.turns.get(playerId)!;
+    const playerTurns = this.playerTurns.get(playerId)!;
     const currentTurn = playerTurns.at(-1)!;
     currentTurn.darts.push({ score, ring });
     currentTurn.overthrown = overthrown;
+  }
+
+  private applyLegWon(event: LegWon) {
+    const playerCount = this.players.length;
+    this.players = this.players.map((p) => ({ ...p, position: (p.position - 1 + playerCount) % playerCount }));
+
+    const playerLegs = this.playerLegs.get(event.payload.winner.playerId)!;
+    this.playerLegs.set(event.payload.winner.playerId, playerLegs + 1);
+    this.currentLeg++;
+  }
+
+  private applyLegStarted(_event: LegStarted) {
+    // reset turns for a fresh leg
+    this.playerTurns = new Map(this.players.map((p) => [p.id, [] as Turn[]]));
+    // the new starter is the player with position 0; current turn will be opened by the subsequent TurnStarted event
+    const starter = this.players.find((p) => p.position === 0)!;
+    this.currentPlayer = starter;
   }
 }

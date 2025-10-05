@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest'
 import { GameProjection } from '@/app/domain/projection';
 import { dartThrownEvent, gameCreatedEvent, gameStartedEvent, playerAddedEvent, turnStartedEvent } from '@/app/domain/events';
-import { startGame } from '../seeder/game.seed';
 
 describe("Game Projection", () => {
     const gameId = "42";
     const startpoints = 301;
     const checkout = "Straight";
+    const legs = 3;
 
     it("should allow to create a new game", async () => {
-        const events = [gameCreatedEvent({ gameId, startpoints, checkout })];
+        const events = [gameCreatedEvent({ gameId, startpoints, checkout, legs })];
         const projection = GameProjection.from(events)
 
         const view = projection.toView();
@@ -19,7 +19,7 @@ describe("Game Projection", () => {
 
     it("should represent all players", async () => {
         const events = [
-            gameCreatedEvent({ gameId, startpoints, checkout }),
+            gameCreatedEvent({ gameId, startpoints, checkout, legs }),
             playerAddedEvent({ payload: { name: "Homer", id: "1", position: 0 }, gameId }),
             playerAddedEvent({ payload: { name: "Bart", id: "1", position: 1 }, gameId }),
             gameStartedEvent({ gameId }),
@@ -73,7 +73,7 @@ describe("Game Projection", () => {
 
     it("should mark current winner", async () => {
         const events = [
-            gameCreatedEvent({ gameId, startpoints: 1, checkout }),
+            gameCreatedEvent({ gameId, startpoints: 1, checkout, legs }),
             playerAddedEvent({ payload: { name: "Homer", id: "1", position: 0 }, gameId }),
             turnStartedEvent({ gameId, createdBy: "system", payload: { playerId: "1" } }),
             dartThrownEvent({ gameId, payload: { score: 1, playerId: "1", overthrown: false, ring: undefined } }),
@@ -87,7 +87,7 @@ describe("Game Projection", () => {
 
     function twoPlayerGameSetup() {
         return [
-            gameCreatedEvent({ gameId, startpoints, checkout }),
+            gameCreatedEvent({ gameId, startpoints, checkout, legs }),
             playerAddedEvent({ payload: { name: "Homer", id: "1", position: 0 }, gameId }),
             playerAddedEvent({ payload: { name: "Bart", id: "2", position: 1 }, gameId }),
             gameStartedEvent({ gameId }),

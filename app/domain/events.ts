@@ -44,6 +44,7 @@ export type GameCreated = DomainEvent & {
   payload: {
     startpoints: number;
     checkout: Checkout;
+    legs: number;
   };
 };
 
@@ -51,10 +52,12 @@ export function gameCreatedEvent({
   gameId,
   startpoints,
   checkout,
+  legs
 }: {
   gameId: string;
   startpoints: number;
   checkout: Checkout;
+  legs: number;
 }): GameCreated {
   return {
     id: createId(),
@@ -65,6 +68,7 @@ export function gameCreatedEvent({
     payload: {
       startpoints,
       checkout,
+      legs,
     },
   };
 }
@@ -116,23 +120,6 @@ export function turnStartedEvent({
   };
 }
 
-export type PlayerWon = DomainEvent & {
-  type: "PlayerWon";
-  createdBy: string;
-  payload: PlayerId;
-};
-
-export function playerWonEvent({ gameId, payload, createdBy }: { gameId: string, payload: PlayerId, createdBy: string }): PlayerWon {
-  return {
-    id: createId(),
-    createdAt: new Date(),
-    type: "PlayerWon",
-    gameId,
-    createdBy: createdBy,
-    payload: payload,
-  };
-}
-
 export type GameStarted = DomainEvent & {
   type: "GameStarted";
   createdBy: null;
@@ -146,6 +133,57 @@ export function gameStartedEvent({ gameId }: { gameId: string }): GameStarted {
     type: "GameStarted",
     gameId,
     createdBy: null,
+    payload: null,
+  };
+}
+
+export type GameOver = DomainEvent & {
+  type: "GameOver";
+  createdBy: string;
+  payload: { winner: PlayerId };
+};
+
+export function gameOverEvent({ gameId, payload, createdBy }: { gameId: string, payload: { winner: PlayerId }, createdBy: string }): GameOver {
+  return {
+    id: createId(),
+    createdAt: new Date(),
+    type: "GameOver",
+    gameId,
+    createdBy: createdBy,
+    payload: payload,
+  };
+}
+
+export type LegWon = DomainEvent & {
+  type: "LegWon";
+  createdBy: string;
+  payload: { winner: PlayerId }; 
+};
+
+export function legWonEvent({ gameId, payload, createdBy }: { gameId: string, payload: { winner: PlayerId }, createdBy: string }): LegWon {
+  return {
+    id: createId(),
+    createdAt: new Date(),
+    type: "LegWon",
+    gameId,
+    createdBy,
+    payload,
+  };
+}
+
+export type LegStarted = DomainEvent & {
+  type: "LegStarted";
+  createdBy: string;
+  payload: null;
+};
+
+export function legStartedEvent({ gameId, createdBy }: { gameId: string, createdBy: string }): LegStarted {
+  return {
+    id: createId(),
+    createdAt: new Date(),
+    type: "LegStarted",
+    gameId,
+    createdBy,
     payload: null,
   };
 }

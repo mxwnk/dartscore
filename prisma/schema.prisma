@@ -33,5 +33,7 @@ enum EventType {
   TurnStarted
   DartThrown
 
-  PlayerWon
+  GameOver
+  LegStarted
+  LegWon
 }

@@ -25,7 +25,7 @@ export class PrismaRepository implements Repository {
     const events = await prisma.gameEvent.findMany({
       where: {
         gameId: { in: gameIds },
-        type: { in: ['GameCreated', 'PlayerAdded'] },
+        type: { in: ['GameCreated', 'PlayerAdded', "LegWon", "GameOver"] },
       },
       orderBy: {
         createdAt: 'asc',

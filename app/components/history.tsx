@@ -25,9 +25,9 @@ export const History = async () => {
                             <td className="w-16 p-4 ml-2"><TargetIcon /></td>
                             <td className="text-2xl">{game.startpoints}</td>
                             <td>{game.checkout}</td>
-                            <td className="flex flex-col p-2">
-                                {game.playersNames.map(name => (
-                                    <p key={name}>{name}</p>
+                            <td className="flex flex-col p-2 text-left">
+                                {game.players.map(player => (
+                                    <p key={player.name}>{player.legsWon} {player.name}</p>
                                 ))}
                             </td>
                             <td className="px-2">{game.createdAt.toLocaleDateString()}</td>

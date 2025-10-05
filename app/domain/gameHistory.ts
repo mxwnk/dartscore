@@ -1,12 +1,18 @@
 import { Checkout } from "../models/checkout";
-import { DomainEvent, GameCreated, PlayerAdded } from "./events";
+import { DomainEvent, GameCreated, GameOver, LegWon, PlayerAdded } from "./events";
 
 export type GameHistory = {
     id: string;
     createdAt: Date;
     startpoints: number;
     checkout: Checkout;
-    playersNames: string[];
+    players: { name: string, legsWon: number, gameWon: boolean }[];
+};
+
+export type PlayerState = {
+    name: string;
+    legsWon: number;
+    gameWon: boolean;
 };
 
 export class GameHistoryProjection {
@@ -14,7 +20,7 @@ export class GameHistoryProjection {
     private createdAt!: Date;
     private startpoints!: number;
     private checkout!: Checkout;
-    private playersNames: string[] = [];
+    private players: Map<string, PlayerState> = new Map();
 
     public toView(): GameHistory {
         return {
@@ -22,7 +28,7 @@ export class GameHistoryProjection {
             createdAt: this.createdAt,
             startpoints: this.startpoints,
             checkout: this.checkout,
-            playersNames: this.playersNames,
+            players: Array.from(this.players.values()),
         };
     }
 
@@ -47,9 +53,25 @@ export class GameHistoryProjection {
                 break;
             case "PlayerAdded":
                 const playerAdded = event as PlayerAdded;
-                this.playersNames.push(playerAdded.payload.name );
+                this.players.set(playerAdded.payload.id, { name: playerAdded.payload.name, legsWon: 0, gameWon: false });
+                break;
+            case "LegWon":
+                this.handleLegWon(event as LegWon);
+                break;
+            case "GameOver":
+                this.handleGameOver(event as GameOver);
                 break;
         }
+    }
+
+    private handleLegWon(event: LegWon) {
+        const player = this.players.get(event.payload.winner.playerId)!;
+        player.legsWon++;
+    }
+
+    private handleGameOver(event: GameOver) {
+        const player = this.players.get(event.payload.winner.playerId)!;
+        player.gameWon = true;
     }
 
 }

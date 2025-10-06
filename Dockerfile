@@ -35,6 +35,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/scripts/update-version.sh ./scrip
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma/
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/effect ./node_modules/effect
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/ws ./node_modules/ws
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/next ./node_modules/next
 

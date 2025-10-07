@@ -13,26 +13,26 @@ export function DartIcon({ className }: { className: string }) {
                     cy="85.361877"
                     rx="25.88534"
                     ry="25.885342"
-                    stroke-width="10" />
+                    strokeWidth="10" />
 
                 <circle
                     cx="58.093018"
                     cy="85.427551"
                     r="50"
-                    stroke-width="10" />
+                    strokeWidth="10" />
 
                 <path
                     d="M 56.236271,84.952498 114.49553,25.063609"
-                    stroke-width="8"
-                    stroke-linecap="round" />
+                    strokeWidth="8"
+                    strokeLinecap="round" />
 
                 <path
                     d="M 97.803341,40.763395 98.091421,20.597759 113.07161,5.9056498 112.63949,25.639166 133.09321,25.495127 118.25706,40.763395 Z"
                     fill="currentColor"
                     stroke="currentColor"
-                    stroke-width="8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round" />
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round" />
             </g>
         </svg>
     )

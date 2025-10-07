@@ -3,8 +3,8 @@ import { startGame } from "./start-game";
 import { AddPlayerDialog } from "./add-player";
 import { PlayerWithName } from "./page";
 import { useEffect, useState } from "react";
+import PlayerList from "./player-list";
 import { Button } from "@/components/ui/button";
-import { CheckIcon, User, Plus, MoveVertical } from "lucide-react";
 import { Checkout } from "../models/checkout";
 import { ButtonGroup } from "@/components/ui/button-group";
 
@@ -36,25 +36,8 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
     }
   }
 
-  function enableDropping(event: React.DragEvent<HTMLElement>) {
-    event.preventDefault();
-  }
-
-  function onPlayerDrag(event: React.DragEvent<HTMLElement>) {
-    event.dataTransfer.setData("playerId", event.currentTarget.id);
-  }
-
-  function onPlayerDrop(event: React.DragEvent<HTMLElement>) {
-    const targetId = event.currentTarget.id;
-    const sourceId = event.dataTransfer.getData("playerId");
-    const targetIndex = players.findIndex((p) => p.id === targetId)!;
-    const sourceIndex = players.findIndex((p) => p.id === sourceId)!;
-    const target = players[targetIndex];
-    const source = players[sourceIndex];
-    const newPlayerList = [...players];
-    newPlayerList[targetIndex] = source;
-    newPlayerList[sourceIndex] = target;
-    setPlayers(newPlayerList);
+  function onReorder(newOrder: PlayerWithName[]) {
+    setPlayers(newOrder);
   }
 
   return (
@@ -134,26 +117,12 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
           >
             Create Player
           </Button>
-          {players.map((p, i) => {
-            const selected = selectedPlayerIds.some((id) => id === p.id);
-            return (
-              <Button
-                onClick={() => togglePlayer(p)}
-                id={p.id}
-                variant="ghost"
-                draggable
-                onDragStart={onPlayerDrag}
-                onDragOver={enableDropping}
-                onDrop={onPlayerDrop}
-                className={`my-2 flex flex-row justify-between cursor-pointer ${selected ? "border-primary border-2" : "bg-background"}`}
-                type="button"
-                key={i}
-              >
-                {selected ? <MoveVertical /> : <User />} {p.name}{" "}
-                {selected ? <CheckIcon /> : <Plus />}
-              </Button>
-            );
-          })}
+          <PlayerList
+            players={players}
+            selectedIds={selectedPlayerIds}
+            onTogglePlayer={togglePlayer}
+            onReorder={onReorder}
+          />
         </div>
         {players
           .filter((p) => selectedPlayerIds.includes(p.id))

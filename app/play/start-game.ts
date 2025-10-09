@@ -21,5 +21,5 @@ export async function startGame(formData: FormData) {
   orderedPlayers.forEach((p) => game.addPlayer(p));
   game.start();
   await repository.save(game);
-  redirect(`/play/${game.getId()}`);
+  redirect(`/play/${game.getId()}?view=play`);
 }

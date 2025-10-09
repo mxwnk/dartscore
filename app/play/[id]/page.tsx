@@ -2,13 +2,13 @@ import { repository } from "@/app/db/repository";
 import { GameSynchronizer } from "./game-synchronizer";
 import { Game } from "./game";
 import { Navigation } from "@/app/components/app-bar";
-import { ViewSelector } from "./view-selector";
+import { ViewMode, ViewSelector } from "./view-selector";
 import { Spectator } from "./spectator";
 import { InviteButton } from "@/app/components/invite-button";
 import { EventLog } from "@/app/components/event-log";
-import { Sidebar, SidebarContent, SidebarProvider, SidebarTrigger, SidebarHeader } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
-export default async function Page(props: { params: Promise<{ id: string }> }) {
+export default async function Page(props: { params: Promise<{ id: string }>, searchParams: Promise<{ view?: ViewMode }> }) {
   const params = await props.params;
   const gameId = params.id;
   const gameProjection = await repository.getProjection(gameId);
@@ -29,8 +29,9 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
               </SidebarContent>
             </Sidebar>
             <ViewSelector
+              gameId={gameId}
               spectator={<Spectator gameView={gameView} />}
-              player={<Game gameId={gameId} gameView={gameView} />}
+              play={<Game gameId={gameId} gameView={gameView} />}
             />
           </main>
         </div>

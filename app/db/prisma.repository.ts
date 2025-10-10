@@ -38,7 +38,11 @@ export class PrismaRepository implements Repository {
       acc[ev.gameId].push(ev);
       return acc;
     }, {} as Record<string, typeof events>);
-    return Object.values(groupedEvents).map(events => GameHistoryProjection.from(events).toView());
+    return Object
+    .values(groupedEvents)
+    .map(events => GameHistoryProjection.from(events)
+    .toView())
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
   public async save(game: Game): Promise<{ version: number }> {

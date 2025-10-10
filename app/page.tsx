@@ -8,8 +8,8 @@ import { PlayButton } from "./play-button";
 export default function Home() {
   return (
     <>
-      <Navigation title="Dart Scoreboard" />
-      <div className="p-4">
+      <Navigation title="Dartscore" />
+      <div className="pt-4 pb-12 md:p-4 flex flex-col items-center">
         <PlayButton />
         <History />
       </div>

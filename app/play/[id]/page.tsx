@@ -19,7 +19,7 @@ export default async function Page(props: { params: Promise<{ id: string }>, sea
       <SidebarProvider defaultOpen={false} >
         <div className="flex flex-col h-full w-full">
           <Navigation
-            title={`Game: ${gameView.players.length} Player - ${gameView.setup.legs} Legs - ${gameView.setup.startpoints} Points - ${gameView.setup.checkout} Out`}
+            title={`${gameView.setup.startpoints} Points - ${gameView.setup.legs} Legs - ${gameView.setup.checkout} Out`}
             end={<><InviteButton /><SidebarTrigger className="ml-2" /></>}
           />
           <main>

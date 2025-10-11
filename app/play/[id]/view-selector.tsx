@@ -2,7 +2,7 @@
 
 import { Target, Tv } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ReactElement, useCallback } from "react";
+import { ReactElement, useCallback, useEffect } from "react";
 
 export type ViewMode = "spectator" | "play";
 
@@ -18,6 +18,12 @@ export function ViewSelector(props: GameViewProps) {
   const searchParams = useSearchParams()
   const viewMode = searchParams.get("view") as ViewMode;
 
+  useEffect(() => {
+    if (!viewMode) {
+      setViewMode("play");
+    }
+  }, [])
+
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -30,7 +36,11 @@ export function ViewSelector(props: GameViewProps) {
 
   function toggleViewMode() {
     const next = viewMode === "play" ? "spectator" : "play"
-    const url = pathname + "?" + createQueryString("view", next);
+    setViewMode(next);
+  }
+
+  function setViewMode(viewMode: ViewMode) {
+    const url = pathname + "?" + createQueryString("view", viewMode);
     router.replace(url);
   }
 

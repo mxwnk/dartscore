@@ -1,0 +1,1 @@
+export const META_THEME_COLOR_ID = "meta-theme-color-id";

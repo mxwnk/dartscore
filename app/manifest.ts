@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next'
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Dartscore',
-    short_name: 'DS',
+    short_name: 'Dartscore',
     description: 'A simple app to count dart scores.',
     start_url: '/',
     display: 'standalone',

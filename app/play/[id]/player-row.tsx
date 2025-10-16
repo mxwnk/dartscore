@@ -18,7 +18,7 @@ export function PlayerRow(props: PlayerRowProps) {
   function rowStyle() {
     switch (props.state) {
       case "overthrown":
-        return "border-5 bg-red-300 border-red-300";
+        return "bg-destructive border-destructive text-white";
       case "won":
         return "border-accent bg-accent";
       case "playing":
@@ -74,7 +74,7 @@ function PlayerBadge({ state, legs }: { state: PlayerState; legs: number; }) {
 function getColorByState(state: PlayerState) {
   switch (state) {
     case "overthrown":
-      return "bg-red-300"
+      return "bg-destructive"
     case "won":
       return "bg-black-80"
     case "playing":

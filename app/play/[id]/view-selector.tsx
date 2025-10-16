@@ -45,7 +45,7 @@ export function ViewSelector(props: GameViewProps) {
   }
 
   return (
-    <div className="mt-4 px-2 max-w-[1800px] mx-auto">
+    <div className="mt-4 md:px-4 px-2 max-w-[1800px] mx-auto">
       {viewMode === "spectator" && props.spectator}
       {viewMode === "play" && props.play}
       <button

@@ -7,7 +7,7 @@ import WakeLock from "./components/wake-lock";
 import { META_THEME_COLOR_ID } from "./constants";
 
 export const metadata: Metadata = {
-  title: "Dart Scoreboard",
+  title: "Dartscore",
   description: "No ads. Track your dart scores",
 };
 

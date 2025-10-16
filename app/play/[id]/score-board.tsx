@@ -60,7 +60,7 @@ export function Scoreboard(props: ScoreboardProps) {
             key={s}
             className="py-8 w-[100%] text-2xl cursor-pointer"
             disabled={s === 25 && ring === "T"}
-            variant="secondary"
+            variant="accent"
           >
             {s}
           </Button>
@@ -73,7 +73,7 @@ export function Scoreboard(props: ScoreboardProps) {
           key={25}
           className="py-8 col-span-2 w-[100%] text-2xl cursor-pointer"
           disabled={ring === "T"}
-          variant="secondary"
+          variant="accent"
         >
           25
         </Button>
@@ -85,7 +85,7 @@ export function Scoreboard(props: ScoreboardProps) {
           key={0}
           className="py-8 col-span-2 w-[100%] text-2xl cursor-pointer"
           disabled={ring !== undefined}
-          variant="secondary"
+          variant="accent"
         >
           0
         </Button>
@@ -95,7 +95,7 @@ export function Scoreboard(props: ScoreboardProps) {
           className="w-[100%] h-18 py-4 text-4xl cursor-pointer"
           onClick={() => toggleRing("D")}
           color="info"
-          variant={ring === "D" ? "default" : "secondary"}
+          variant={ring === "D" ? "default" : "accent"}
         >
           Double
         </Button>
@@ -103,17 +103,17 @@ export function Scoreboard(props: ScoreboardProps) {
           className="w-[100%] h-18 py-4 text-4xl cursor-pointer"
           onClick={() => toggleRing("T")}
           color="info"
-          variant={ring === "T" ? "default" : "secondary"}
+          variant={ring === "T" ? "default" : "accent"}
         >
           Triple
         </Button>
         <Button
-          className="w-[100%] bg-red-200 h-18 py-4 text-4xl cursor-pointer"
+          className="w-[100%] h-18 py-4 text-4xl cursor-pointer"
           onClick={() => {
             undoLastThrow(props.gameId);
             navigator.vibrate(100);
           }}
-          variant="outline"
+          variant="destructive"
         >
           Undo
         </Button>

@@ -20,11 +20,11 @@ export function PlayerRow(props: PlayerRowProps) {
       case "overthrown":
         return "border-5 bg-red-300 border-red-300";
       case "won":
-        return "border-secondary bg-secondary";
+        return "border-accent bg-accent";
       case "playing":
         return "border-primary bg-popover";
       case "waiting":
-        return "border-secondary border-3 bg-popover";
+        return "border-accent border-3 bg-popover";
     }
   }
 
@@ -80,6 +80,6 @@ function getColorByState(state: PlayerState) {
     case "playing":
       return "bg-primary"
     default:
-      return "bg-secondary";
+      return "bg-accent";
   }
 }

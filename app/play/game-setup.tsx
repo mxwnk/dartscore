@@ -7,6 +7,8 @@ import PlayerList from "./player-list";
 import { Button } from "@/components/ui/button";
 import { Checkout } from "../models/checkout";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { Card } from "@/components/ui/card";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 type GameSetupProps = {
   players: PlayerWithName[];
@@ -42,65 +44,41 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
 
   return (
     <form action={startGame} className="p-4 rounded-xl">
-      <div className="flex flex-col items-stretch rounded-xl mt-4 max-w-[1024px] p-2 bg-popover p-4 mx-auto">
+      <Card className="flex flex-col items-stretch mt-4 max-w-[1024px] p-4 mx-auto">
         <h2 className="text-3xl text-center">Game Setup</h2>
         <div className="grid items-stretch">
           <h3 className="text-3xl my-4">Starting Points</h3>
-          <div className="grid grid-cols-2 gap-2">
+          <ToggleGroup value={startpoints.toString()} onValueChange={v => setStartpoints(parseInt(v))} className="w-full" type="single">
             {gameStartPoints.map((sp) => (
-              <Button
-                key={sp}
-                type="button"
-                className="w-full text-2xl cursor-pointer"
-                variant={startpoints === sp ? "secondary" : "outline"}
-                onClick={() => setStartpoints(sp)}
-              >
-                {sp}
-              </Button>
+              <ToggleGroupItem variant="outline" key={sp} size="lg" className="w-full text-2xl cursor-pointer" value={sp.toString()}>{sp}</ToggleGroupItem>
             ))}
-            <input
-              name="startpoints"
-              readOnly
-              type="number"
-              hidden
-              value={startpoints}
-            />
-          </div>
+          </ToggleGroup>
+          <input
+            name="startpoints"
+            readOnly
+            type="number"
+            hidden
+            value={startpoints}
+          />
           <h3 className="text-3xl my-4">Checkout</h3>
-          <div className="grid grid-cols-2 gap-2 mt-2">
+          <ToggleGroup value={checkout} onValueChange={c => setCheckout(c as Checkout)} className="w-full" type="single">
             {checkouts.map((c) => (
-              <Button
-                key={c}
-                type="button"
-                className="w-full text-2xl cursor-pointer"
-                variant={checkout === c ? "secondary" : "outline"}
-                onClick={() => setCheckout(c)}
-              >
-                {c}
-              </Button>
+              <ToggleGroupItem variant="outline" key={c} size="lg" className="w-full text-2xl cursor-pointer" value={c}>{c}</ToggleGroupItem>
             ))}
-            <input
-              name="checkout"
-              readOnly
-              type="text"
-              hidden
-              value={checkout}
-            />
-          </div>
+          </ToggleGroup>
+          <input
+            name="checkout"
+            readOnly
+            type="text"
+            hidden
+            value={checkout}
+          />
           <h3 className="text-3xl my-4">Legs</h3>
-          <ButtonGroup className="flex w-full">
+          <ToggleGroup value={legs.toString()} onValueChange={(v) => setLegs(parseInt(v))} className="w-full" type="single">
             {possibleLegs.map((l) => (
-              <Button
-                key={l}
-                type="button"
-                className="cursor-pointer text-2xl flex-1"
-                variant={legs === l ? "secondary" : "outline"}
-                onClick={() => setLegs(l)}
-              >
-                {l}
-              </Button>
+              <ToggleGroupItem variant="outline" key={l} size="lg" className="w-full text-2xl cursor-pointer" value={l.toString()}>{l}</ToggleGroupItem>
             ))}
-          </ButtonGroup>
+          </ToggleGroup>
           <input
             name="legs"
             readOnly
@@ -143,7 +121,7 @@ export function GameSetup({ players: playerList }: GameSetupProps) {
         >
           Start Game
         </Button>
-      </div>
+      </Card>
       <AddPlayerDialog
         showDialog={showAddPlayerDialog}
         close={() => setShowAddPlayerDialog(false)}

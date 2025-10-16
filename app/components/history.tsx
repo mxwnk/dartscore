@@ -2,6 +2,7 @@ import Link from "next/link";
 import { repository } from "../db/repository";
 import { TargetIcon } from '../assets/target-icon';
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export const History = async () => {
     const games = await repository.getHistory();

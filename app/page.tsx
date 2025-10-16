@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <>
       <Navigation title="Dartscore" />
-      <div className="pt-4 pb-12 md:p-4 flex flex-col items-center">
+      <div className="p-4 pb-12 md:p-4 flex flex-col items-center mx-auto max-w-[500px]">
         <PlayButton />
         <History />
       </div>

@@ -23,9 +23,9 @@ function MetaThemeProvider({ children }: React.PropsWithChildren) {
   useEffect(() => {
     const metaThemeColor = document.getElementById(META_THEME_COLOR_ID);
     if (theme === "dark") {
-      metaThemeColor?.setAttribute("content", "#11111e");
+      metaThemeColor?.setAttribute("content", "#27272a");
     } else {
-      metaThemeColor?.setAttribute("content", "#f8fbff");
+      metaThemeColor?.setAttribute("content", "#f4f4f5");
     }
   }, [theme])
   return children;

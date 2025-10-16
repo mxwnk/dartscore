@@ -69,14 +69,14 @@ function SortablePlayer({ player, selected, togglePlayer }: DraggablePlayerProps
             onClick={() => togglePlayer(player)}
             style={style}
             ref={setNodeRef}
-            variant={selected ? "secondary" : "outline"}
+            variant={selected ? "secondary" : "ghost"}
             {...listeners}
             {...attributes}
-            className={`my-2 flex flex-row justify-between cursor-pointer`}
+            className={`my-2 flex flex-row justify-between cursor-pointer border-1 border-input`}
             type="button"
         >
             {selected ? <MoveVertical /> : <User />} {player.name}{' '}
-            {selected ? <CheckIcon /> : <Plus />}
+            {selected ? <CheckIcon className="text-primary" /> : <Plus />}
         </Button>
     );
 }

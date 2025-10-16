@@ -11,7 +11,7 @@ type NagivationProps = {
 
 export function Navigation(props: NagivationProps) {
   return (
-    <div className="bg-popover text-text p-4 flex items-center">
+    <div className="bg-muted text-text p-4 flex items-center">
       <div className="flex items-center">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/">

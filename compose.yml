@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres
-    container_name: dart_scoreboard_db
+    container_name: dartscore_db 
     restart: unless-stopped
     ports:
       - "5432:5432"

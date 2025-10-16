@@ -1,6 +1,6 @@
-# 🎯 Dart Scoreboard 
+# 🎯 Dartscore
 
-Dart Scoreboard is a web application for managing and displaying scores during a game of darts. Built with Next.js, the project was bootstrapped using `create-next-app`.
+Dartscore is a web application for managing and displaying scores during a game of darts. Built with Next.js, the project was bootstrapped using `create-next-app`.
 
 ![Image](./doc/scoreboard.png)
 

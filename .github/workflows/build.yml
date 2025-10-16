@@ -42,5 +42,5 @@ jobs:
           with:
             context: .
             push: true
-            tags: mxwnk/dart-scoreboard:latest
+            tags: mxwnk/dartscore:latest
             platforms: linux/amd64, linux/arm64

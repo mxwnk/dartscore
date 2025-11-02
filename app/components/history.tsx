@@ -24,8 +24,9 @@ export const History = async () => {
                     {games.map(game => (
                         <TableRow key={game.id} className="cursor-pointer">
                             <TableCell className="w-16 p-4 ml-2 hidden md:table-cell">
-                                <TargetIcon />
-                                <Link href={`/play/${game.id}`} className="absolute inset-0 z-10" />
+                                <Link href={`/play/${game.id}`} >
+                                    <TargetIcon />
+                                </Link>
                             </TableCell>
                             <TableCell className="text-2xl">{game.startpoints}</TableCell>
                             <TableCell>{game.checkout}</TableCell>

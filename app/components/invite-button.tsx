@@ -9,6 +9,7 @@ import {
 import { QrCode } from "./qr-code";
 import { Share2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export function InviteButton() {
   const [location, setLocation] = useState<string | undefined>();
@@ -26,9 +27,9 @@ export function InviteButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="cursor-pointer" aria-label="Open Dialog">
+        <Button variant="secondary" size="icon-lg" asChild className="cursor-pointer" aria-label="Open Dialog">
           <Share2 className="h-6 w-6" />
-        </button>
+        </Button>
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center">
         <DialogTitle>Join game</DialogTitle>

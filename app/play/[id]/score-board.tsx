@@ -54,7 +54,7 @@ export function Scoreboard(props: ScoreboardProps) {
         {scores.map((s) => (
           <Button
             onClick={() => {
-              navigator.vibrate(100);
+              navigator.vibrate?.(100);
               onSumit(s);
             }}
             key={s}
@@ -67,7 +67,7 @@ export function Scoreboard(props: ScoreboardProps) {
         ))}
         <Button
           onClick={() => {
-            navigator.vibrate(100);
+            navigator.vibrate?.(100);
             onSumit(25);
           }}
           key={25}
@@ -79,7 +79,7 @@ export function Scoreboard(props: ScoreboardProps) {
         </Button>
         <Button
           onClick={() => {
-            navigator.vibrate(100);
+            navigator.vibrate?.(100);
             onSumit(0);
           }}
           key={0}
@@ -111,7 +111,7 @@ export function Scoreboard(props: ScoreboardProps) {
           className="w-[100%] h-18 py-4 text-4xl cursor-pointer"
           onClick={() => {
             undoLastThrow(props.gameId);
-            navigator.vibrate(100);
+            navigator.vibrate?.(100);
           }}
           variant="destructive"
         >

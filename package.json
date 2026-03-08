@@ -9,7 +9,7 @@
     "build:server": "tsc --project tsconfig.server.json",
     "prebuild": "prisma generate",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "vitest",
     "db:up": "docker compose up -d",
     "db:push": "prisma db push",

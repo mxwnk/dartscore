@@ -15,6 +15,7 @@ export type DartThrown = DomainEvent & {
   createdBy: null;
   payload: {
     playerId: string;
+    turnId: string;
     score: number;
     ring?: Ring;
     overthrown: boolean;

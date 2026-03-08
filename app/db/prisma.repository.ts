@@ -2,13 +2,42 @@ import { Repository } from "./repository";
 import prisma from "@/lib/prisma";
 import { Game } from "../domain/game";
 import { GameProjection } from "../domain/projection";
-import { DomainEvent } from "../domain/events";
+import { DartThrown, DomainEvent, LegWon } from "../domain/events";
 import { GameEvent, Prisma } from "@/prisma/app/generated/prisma/client";
 import { GameHistory, GameHistoryProjection } from "../domain/gameHistory";
+import { Stats } from "../models/statistics";
 
 export class PrismaRepository implements Repository {
   public static instance(): Repository {
     return new PrismaRepository();
+  }
+
+  public async getStats(): Promise<Stats> {
+    const stats: Stats = { players: [] };
+    const players = await prisma.player.findMany({ select: { name: true, id: true } });
+    const legsWon: LegWon[] = await prisma.gameEvent.findMany({ where: { type: "LegWon" } }) as unknown as LegWon[];
+    const dartsThrown: DartThrown[] = await prisma.gameEvent.findMany({ where: { type: "DartThrown" } }) as unknown as DartThrown[];
+
+    const turnMap = new Map<string, { playerId: string; score: number; overthrown: boolean }>();
+    for (const dart of dartsThrown) {
+      const { playerId, turnId, score, overthrown } = dart.payload;
+      const turn = turnMap.get(turnId) ?? { playerId, score: 0, overthrown: false };
+      turn.score += score;
+      if (overthrown) turn.overthrown = true;
+      turnMap.set(turnId, turn);
+    }
+
+    for (const player of players) {
+      const playerLegs = legsWon.filter(lw => player.id === lw.payload.winner.playerId).length;
+      let highestTurn = 0;
+      for (const turn of turnMap.values()) {
+        if (turn.playerId === player.id && !turn.overthrown && turn.score > highestTurn) {
+          highestTurn = turn.score;
+        }
+      }
+      stats.players.push({ ...player, legsWon: playerLegs, gamesWon: 0, highestCheckout: 0, highestTurn });
+    }
+    return stats;
   }
 
   public async getHistory(): Promise<GameHistory[]> {
@@ -39,10 +68,10 @@ export class PrismaRepository implements Repository {
       return acc;
     }, {} as Record<string, typeof events>);
     return Object
-    .values(groupedEvents)
-    .map(events => GameHistoryProjection.from(events)
-    .toView())
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      .values(groupedEvents)
+      .map(events => GameHistoryProjection.from(events)
+        .toView())
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
   public async save(game: Game): Promise<{ version: number }> {

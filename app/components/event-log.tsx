@@ -36,7 +36,7 @@ function formatPayload(event: GameEvent, players: PlayerView[]): import("react")
     switch (event.type) {
         case "DartThrown":
             const dartThrownEvent = event as DartThrown;
-            return `Score: ${dartThrownEvent.payload.score} ${dartThrownEvent.payload.ring ? "- Ring: " + dartThrownEvent.payload.ring : ""} - Overthrown: ${dartThrownEvent.payload.overthrown}`;
+            return `${dartThrownEvent.payload.turnId} - Score: ${dartThrownEvent.payload.score} ${dartThrownEvent.payload.ring ? "- Ring: " + dartThrownEvent.payload.ring : ""} - Overthrown: ${dartThrownEvent.payload.overthrown}`;
         case "PlayerAdded":
             const playerAddedEvent = event as PlayerAdded;
             return `Player: ${playerAddedEvent.payload.name} - Position: ${playerAddedEvent.payload.position}`;

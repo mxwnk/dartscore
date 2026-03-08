@@ -27,7 +27,7 @@ export function InviteButton() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary" size="icon-lg" asChild className="cursor-pointer" aria-label="Open Dialog">
+        <Button variant="secondary" size="icon-lg" className="cursor-pointer" aria-label="Open Dialog">
           <Share2 className="h-6 w-6" />
         </Button>
       </DialogTrigger>

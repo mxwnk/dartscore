@@ -34,6 +34,7 @@ export class Game {
 
   private players: PlayerWithPositon[] = [];
   private currentPlayer!: PlayerWithPositon;
+  private turnId!: string;
   private playerTurns: Map<string, Turn[]> = new Map();
 
   private playerLegs: Map<string, number> = new Map();
@@ -182,6 +183,7 @@ export class Game {
       gameId: this.id,
       payload: {
         playerId: this.currentPlayer.id,
+        turnId: this.turnId,
         overthrown,
         ...dart,
       },
@@ -282,6 +284,7 @@ export class Game {
   }
 
   private applyTurnStarted(event: TurnStarted) {
+    this.turnId = event.id;
     this.currentPlayer = this.players.find((p) => p.id === event.payload.playerId)!;
     this.playerTurns.get(event.payload.playerId)!.push({ darts: [], overthrown: false });
   }

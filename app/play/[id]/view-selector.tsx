@@ -18,12 +18,6 @@ export function ViewSelector(props: GameViewProps) {
   const searchParams = useSearchParams()
   const viewMode = searchParams.get("view") as ViewMode;
 
-  useEffect(() => {
-    if (!viewMode) {
-      setViewMode("play");
-    }
-  }, [])
-
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -34,14 +28,20 @@ export function ViewSelector(props: GameViewProps) {
     [searchParams]
   )
 
+  const setViewMode = useCallback((mode: ViewMode) => {
+    const url = pathname + "?" + createQueryString("view", mode);
+    router.replace(url);
+  }, [pathname, createQueryString, router])
+
+  useEffect(() => {
+    if (!viewMode) {
+      setViewMode("play");
+    }
+  }, [viewMode, setViewMode])
+
   function toggleViewMode() {
     const next = viewMode === "play" ? "spectator" : "play"
     setViewMode(next);
-  }
-
-  function setViewMode(viewMode: ViewMode) {
-    const url = pathname + "?" + createQueryString("view", viewMode);
-    router.replace(url);
   }
 
   return (
